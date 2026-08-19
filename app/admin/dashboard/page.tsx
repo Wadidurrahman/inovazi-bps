@@ -16,17 +16,29 @@ export default function AdminDashboard() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
+  // State untuk 5 Slot Gambar
+  const [bgFile, setBgFile] = useState<File | null>(null)
+  const [bgPreview, setBgPreview] = useState<string | null>(null)
+
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
 
-  // STATE UNTUK POPUP NOTIFIKASI KUSTOM
+  const [foto1File, setFoto1File] = useState<File | null>(null)
+  const [foto1Preview, setFoto1Preview] = useState<string | null>(null)
+
+  const [foto2File, setFoto2File] = useState<File | null>(null)
+  const [foto2Preview, setFoto2Preview] = useState<string | null>(null)
+
+  const [foto3File, setFoto3File] = useState<File | null>(null)
+  const [foto3Preview, setFoto3Preview] = useState<string | null>(null)
+
   const [popupMessage, setPopupMessage] = useState<string | null>(null)
 
   const initialFormState = {
     id: '', nama_inovasi: '', pilar: '', nilai_berakhlak: '', timeline: '',
     deskripsi: '', tujuan: '', output: '', outcome: '', ukuran_keberhasilan: '',
     kondisi_sebelum: '', kondisi_sesudah: '', dampak: '',
-    logo: '', link: '', dokumentasi: false
+    gambar: '', logo: '', foto_1: '', foto_2: '', foto_3: '', link: '', dokumentasi: false
   }
   const [formData, setFormData] = useState(initialFormState)
 
@@ -64,8 +76,11 @@ export default function AdminDashboard() {
   const openAddModal = () => {
     setModalMode('add')
     setFormData(initialFormState)
-    setImageFile(null)
-    setImagePreview(null)
+    setBgFile(null); setBgPreview(null)
+    setImageFile(null); setImagePreview(null)
+    setFoto1File(null); setFoto1Preview(null)
+    setFoto2File(null); setFoto2Preview(null)
+    setFoto3File(null); setFoto3Preview(null)
     setIsModalOpen(true)
     setActiveDropdown(null)
   }
@@ -73,8 +88,11 @@ export default function AdminDashboard() {
   const openEditModal = (item: any) => {
     setModalMode('edit')
     setFormData(item)
-    setImageFile(null)
-    setImagePreview(item.logo || item.gambar || null)
+    setBgFile(null); setBgPreview(item.gambar || null)
+    setImageFile(null); setImagePreview(item.logo || null)
+    setFoto1File(null); setFoto1Preview(item.foto_1 || null)
+    setFoto2File(null); setFoto2Preview(item.foto_2 || null)
+    setFoto3File(null); setFoto3Preview(item.foto_3 || null)
     setIsModalOpen(true)
     setActiveDropdown(null)
   }
@@ -93,26 +111,34 @@ export default function AdminDashboard() {
     setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }))
   }
 
-  // VALIDASI DENGAN POPUP KUSTOM (TANPA KATA SUPABASE)
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, typeTarget: 'bg' | 'logo' | 'f1' | 'f2' | 'f3') => {
     const file = e.target.files?.[0]
     if (file) {
-      const maxSizeInBytes = 2 * 1024 * 1024 // 2 MB
-
-      if (file.size > maxSizeInBytes) {
-        setPopupMessage('Ukuran gambar terlalu besar! Maksimal ukuran file adalah 2 MB.')
-        e.target.value = ''
+      if (file.size > 2 * 1024 * 1024) {
+        setPopupMessage('Ukuran gambar terlalu besar! Maksimal 2 MB.')
         return
       }
-
       if (!file.type.startsWith('image/')) {
-        setPopupMessage('Format file tidak valid! Harap unggah file berformat gambar (PNG atau JPG).')
-        e.target.value = ''
+        setPopupMessage('Format file harus berupa gambar (PNG/JPG).')
         return
       }
 
-      setImageFile(file)
-      setImagePreview(URL.createObjectURL(file))
+      if (typeTarget === 'bg') {
+        setBgFile(file)
+        setBgPreview(URL.createObjectURL(file))
+      } else if (typeTarget === 'logo') {
+        setImageFile(file)
+        setImagePreview(URL.createObjectURL(file))
+      } else if (typeTarget === 'f1') {
+        setFoto1File(file)
+        setFoto1Preview(URL.createObjectURL(file))
+      } else if (typeTarget === 'f2') {
+        setFoto2File(file)
+        setFoto2Preview(URL.createObjectURL(file))
+      } else if (typeTarget === 'f3') {
+        setFoto3File(file)
+        setFoto3Preview(URL.createObjectURL(file))
+      }
     }
   }
 
@@ -121,20 +147,36 @@ export default function AdminDashboard() {
     setLoading(true)
 
     try {
-      let finalImageUrl = formData.logo
+      let finalBgUrl = formData.gambar
+      let finalLogoUrl = formData.logo
+      let finalFoto1 = formData.foto_1
+      let finalFoto2 = formData.foto_2
+      let finalFoto3 = formData.foto_3
 
-      if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop()
-        const fileName = `${Date.now()}.${fileExt}`
+      const uploadToSupabase = async (file: File) => {
+        const fileExt = file.name.split('.').pop()
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`
         const filePath = `sampul-inovasi/${fileName}`
-
-        await supabase.storage.from('images').upload(filePath, imageFile)
+        await supabase.storage.from('images').upload(filePath, file)
         const { data: publicUrlData } = supabase.storage.from('images').getPublicUrl(filePath)
-        finalImageUrl = publicUrlData.publicUrl
+        return publicUrlData.publicUrl
       }
 
+      if (bgFile) finalBgUrl = await uploadToSupabase(bgFile)
+      if (imageFile) finalLogoUrl = await uploadToSupabase(imageFile)
+      if (foto1File) finalFoto1 = await uploadToSupabase(foto1File)
+      if (foto2File) finalFoto2 = await uploadToSupabase(foto2File)
+      if (foto3File) finalFoto3 = await uploadToSupabase(foto3File)
+
       const { id, ...dataWithoutId } = formData
-      const dataToSave = { ...dataWithoutId, logo: finalImageUrl }
+      const dataToSave = { 
+        ...dataWithoutId, 
+        gambar: finalBgUrl,
+        logo: finalLogoUrl,
+        foto_1: finalFoto1,
+        foto_2: finalFoto2,
+        foto_3: finalFoto3
+      }
 
       if (modalMode === 'add') {
         const { error } = await supabase.from('inovasi').insert([dataToSave])
@@ -160,7 +202,6 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-[#F4F8FB] text-slate-800 font-sans pb-12 relative">
       
-      {/* POPUP MODAL NOTIFIKASI KUSTOM */}
       {popupMessage && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-fadeIn">
           <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 max-w-sm w-full text-center transform transition-all">
@@ -169,10 +210,7 @@ export default function AdminDashboard() {
             </div>
             <h3 className="text-base font-bold text-slate-800 mb-2">Perhatian</h3>
             <p className="text-sm text-slate-600 mb-6 leading-relaxed">{popupMessage}</p>
-            <button 
-              onClick={() => setPopupMessage(null)} 
-              className="w-full bg-[#0B5E90] hover:bg-[#084870] text-white font-bold py-2.5 rounded-xl transition shadow-md text-sm"
-            >
+            <button onClick={() => setPopupMessage(null)} className="w-full bg-[#0B5E90] hover:bg-[#084870] text-white font-bold py-2.5 rounded-xl transition shadow-md text-sm">
               Mengerti
             </button>
           </div>
@@ -194,15 +232,12 @@ export default function AdminDashboard() {
               <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Portal Inovazi BPS</p>
             </div>
           </div>
-          
           <div className="flex items-center gap-2 sm:gap-3">
             <button onClick={() => router.push('/')} className="text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#0B5E90] px-3 sm:px-4 py-2 rounded-lg transition-colors flex items-center gap-2 hover:bg-slate-50">
-              <LayoutDashboard className="w-4 h-4" /> 
-              <span className="hidden sm:inline">Pratinjau Web</span>
+              <LayoutDashboard className="w-4 h-4" /> <span className="hidden sm:inline">Pratinjau Web</span>
             </button>
             <button onClick={handleLogout} className="text-xs sm:text-sm font-semibold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-rose-600 px-3 sm:px-4 py-2 rounded-lg transition-colors flex items-center gap-2 shadow-sm">
-              <LogOut className="w-4 h-4" /> 
-              <span className="hidden sm:inline">Keluar</span>
+              <LogOut className="w-4 h-4" /> <span className="hidden sm:inline">Keluar</span>
             </button>
           </div>
         </div>
@@ -214,10 +249,7 @@ export default function AdminDashboard() {
             <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">Daftar Inovasi</h2>
             <p className="text-sm text-slate-500 mt-1 font-medium">Kelola semua program inovasi Anda di sini.</p>
           </div>
-          <button 
-            onClick={openAddModal}
-            className="inline-flex items-center justify-center gap-2 bg-[#0B5E90] hover:bg-[#084870] text-white px-5 py-2.5 rounded-lg font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 text-sm"
-          >
+          <button onClick={openAddModal} className="inline-flex items-center justify-center gap-2 bg-[#0B5E90] hover:bg-[#084870] text-white px-5 py-2.5 rounded-lg font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 text-sm">
             <Plus className="w-4 h-4" /> Tambah Inovasi
           </button>
         </div>
@@ -268,16 +300,9 @@ export default function AdminDashboard() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="relative inline-block text-left">
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setActiveDropdown(activeDropdown === item.id ? null : item.id)
-                            }}
-                            className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
-                          >
+                          <button onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === item.id ? null : item.id) }} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
                             <MoreVertical className="w-5 h-5" />
                           </button>
-
                           {activeDropdown === item.id && (
                             <div ref={dropdownRef} className="absolute right-0 top-10 mt-1 w-40 bg-white rounded-lg shadow-xl border border-slate-200 py-1.5 z-[100] animate-fadeIn">
                               <button onClick={() => router.push('/')} className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
@@ -324,42 +349,107 @@ export default function AdminDashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-xs font-semibold text-slate-500 mb-1.5">Nama Inovasi</label>
-                      <input type="text" name="nama_inovasi" value={formData.nama_inovasi} onChange={handleChange} required className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none transition-all font-medium text-slate-800" />
+                      <input type="text" name="nama_inovasi" value={formData.nama_inovasi} onChange={handleChange} required className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none font-medium text-slate-800" />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-500 mb-1.5">Pilar Utama</label>
-                      <input type="text" name="pilar" value={formData.pilar} onChange={handleChange} required className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none transition-all font-medium text-slate-800" />
+                      <input type="text" name="pilar" value={formData.pilar} onChange={handleChange} required className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none font-medium text-slate-800" />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-500 mb-1.5">Nilai BerAKHLAK</label>
-                      <input type="text" name="nilai_berakhlak" value={formData.nilai_berakhlak} onChange={handleChange} required className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none transition-all font-medium text-slate-800" />
+                      <input type="text" name="nilai_berakhlak" value={formData.nilai_berakhlak} onChange={handleChange} required className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none font-medium text-slate-800" />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-500 mb-1.5">Timeline / Kuartal</label>
-                      <input type="text" name="timeline" value={formData.timeline} onChange={handleChange} required className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none transition-all font-medium text-slate-800" />
+                      <input type="text" name="timeline" value={formData.timeline} onChange={handleChange} required className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none font-medium text-slate-800" />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2">2. Visual & Media</h4>
-                  {!imagePreview ? (
-                    <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-slate-200 border-dashed rounded-lg cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors group">
-                      <UploadCloud className="w-8 h-8 text-slate-400 group-hover:text-[#0B5E90] mb-3 transition-colors" />
-                      <p className="mb-1 text-sm font-semibold text-slate-600">Klik untuk unggah gambar (Logo/Dokumentasi)</p>
-                      <p className="text-xs text-slate-400">PNG, JPG (Maks 2MB)</p>
-                      <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
-                    </label>
-                  ) : (
-                    <div className="relative w-full max-w-sm h-48 rounded-lg border border-slate-200 overflow-hidden group">
-                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-slate-900/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button type="button" onClick={() => { setImageFile(null); setImagePreview(null); }} className="bg-white text-rose-600 px-4 py-2 rounded-lg font-bold text-xs flex items-center gap-2 hover:bg-rose-50">
-                          <X className="w-3 h-3" /> Ganti Gambar
-                        </button>
+                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2">2. Pengaturan 5 Slot Gambar</h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-600 mb-2">1. Background Utama (Banner Web)</label>
+                      {!bgPreview ? (
+                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-200 border-dashed rounded-lg cursor-pointer bg-slate-50 hover:bg-slate-100">
+                          <UploadCloud className="w-5 h-5 text-slate-400 mb-1" />
+                          <span className="text-xs text-slate-500">Unggah Background Utama</span>
+                          <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, 'bg')} />
+                        </label>
+                      ) : (
+                        <div className="relative w-full h-32 rounded-lg border border-slate-200 overflow-hidden">
+                          <img src={bgPreview} alt="BG" className="w-full h-full object-cover" />
+                          <button type="button" onClick={() => { setBgFile(null); setBgPreview(null); }} className="absolute top-1 right-1 bg-rose-600 text-white p-1 rounded text-[10px]">Ganti</button>
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-600 mb-2">2. Logo Inovasi (Pojok Atas / Header)</label>
+                      {!imagePreview ? (
+                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-200 border-dashed rounded-lg cursor-pointer bg-slate-50 hover:bg-slate-100">
+                          <UploadCloud className="w-5 h-5 text-slate-400 mb-1" />
+                          <span className="text-xs text-slate-500">Unggah Logo Inovasi</span>
+                          <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, 'logo')} />
+                        </label>
+                      ) : (
+                        <div className="relative w-full h-32 rounded-lg border border-slate-200 overflow-hidden">
+                          <img src={imagePreview} alt="Logo" className="w-full h-full object-cover" />
+                          <button type="button" onClick={() => { setImageFile(null); setImagePreview(null); }} className="absolute top-1 right-1 bg-rose-600 text-white p-1 rounded text-[10px]">Ganti</button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-600 mb-2">3. Foto Slider Dokumentasi (3 Foto)</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div>
+                        {!foto1Preview ? (
+                          <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-200 rounded-lg cursor-pointer bg-slate-50">
+                            <span className="text-[10px] text-slate-500">+ Foto Slider 1</span>
+                            <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, 'f1')} />
+                          </label>
+                        ) : (
+                          <div className="relative w-full h-24 rounded-lg border border-slate-200 overflow-hidden">
+                            <img src={foto1Preview} alt="F1" className="w-full h-full object-cover" />
+                            <button type="button" onClick={() => { setFoto1File(null); setFoto1Preview(null); }} className="absolute top-1 right-1 bg-rose-600 text-white p-1 rounded text-[10px]">X</button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        {!foto2Preview ? (
+                          <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-200 rounded-lg cursor-pointer bg-slate-50">
+                            <span className="text-[10px] text-slate-500">+ Foto Slider 2</span>
+                            <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, 'f2')} />
+                          </label>
+                        ) : (
+                          <div className="relative w-full h-24 rounded-lg border border-slate-200 overflow-hidden">
+                            <img src={foto2Preview} alt="F2" className="w-full h-full object-cover" />
+                            <button type="button" onClick={() => { setFoto2File(null); setFoto2Preview(null); }} className="absolute top-1 right-1 bg-rose-600 text-white p-1 rounded text-[10px]">X</button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        {!foto3Preview ? (
+                          <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-200 rounded-lg cursor-pointer bg-slate-50">
+                            <span className="text-[10px] text-slate-500">+ Foto Slider 3</span>
+                            <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, 'f3')} />
+                          </label>
+                        ) : (
+                          <div className="relative w-full h-24 rounded-lg border border-slate-200 overflow-hidden">
+                            <img src={foto3Preview} alt="F3" className="w-full h-full object-cover" />
+                            <button type="button" onClick={() => { setFoto3File(null); setFoto3Preview(null); }} className="absolute top-1 right-1 bg-rose-600 text-white p-1 rounded text-[10px]">X</button>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  )}
+                  </div>
+
                 </div>
 
                 <div className="space-y-4">
@@ -367,11 +457,11 @@ export default function AdminDashboard() {
                   <div className="space-y-5">
                     <div>
                       <label className="block text-xs font-semibold text-slate-500 mb-1.5">Deskripsi / Uraian Kegiatan</label>
-                      <textarea name="deskripsi" value={formData.deskripsi} onChange={handleChange} required rows={3} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none transition-all resize-none font-medium text-slate-800"></textarea>
+                      <textarea name="deskripsi" value={formData.deskripsi} onChange={handleChange} required rows={3} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none font-medium text-slate-800"></textarea>
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-500 mb-1.5">Tujuan Utama</label>
-                      <textarea name="tujuan" value={formData.tujuan} onChange={handleChange} required rows={2} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none transition-all resize-none font-medium text-slate-800"></textarea>
+                      <textarea name="tujuan" value={formData.tujuan} onChange={handleChange} required rows={2} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none font-medium text-slate-800"></textarea>
                     </div>
                   </div>
                 </div>
@@ -381,27 +471,27 @@ export default function AdminDashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                       <label className="block text-xs font-semibold text-slate-500 mb-1.5">Output (Keluaran)</label>
-                      <textarea name="output" value={formData.output} onChange={handleChange} required rows={2} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none transition-all resize-none font-medium text-slate-800"></textarea>
+                      <textarea name="output" value={formData.output} onChange={handleChange} required rows={2} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none font-medium text-slate-800"></textarea>
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-500 mb-1.5">Outcome (Hasil)</label>
-                      <textarea name="outcome" value={formData.outcome} onChange={handleChange} required rows={2} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none transition-all resize-none font-medium text-slate-800"></textarea>
+                      <textarea name="outcome" value={formData.outcome} onChange={handleChange} required rows={2} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none font-medium text-slate-800"></textarea>
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-500 mb-1.5">Ukuran Keberhasilan</label>
-                      <textarea name="ukuran_keberhasilan" value={formData.ukuran_keberhasilan} onChange={handleChange} required rows={2} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none transition-all resize-none font-medium text-slate-800"></textarea>
+                      <textarea name="ukuran_keberhasilan" value={formData.ukuran_keberhasilan} onChange={handleChange} required rows={2} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none font-medium text-slate-800"></textarea>
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-500 mb-1.5">Dampak Signifikan</label>
-                      <textarea name="dampak" value={formData.dampak} onChange={handleChange} required rows={2} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none transition-all resize-none font-medium text-slate-800"></textarea>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1.5">Dampak</label>
+                      <textarea name="dampak" value={formData.dampak} onChange={handleChange} required rows={2} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none font-medium text-slate-800"></textarea>
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-500 mb-1.5">Kondisi Sebelum</label>
-                      <textarea name="kondisi_sebelum" value={formData.kondisi_sebelum} onChange={handleChange} required rows={2} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none transition-all resize-none font-medium text-slate-800"></textarea>
+                      <textarea name="kondisi_sebelum" value={formData.kondisi_sebelum} onChange={handleChange} required rows={2} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none font-medium text-slate-800"></textarea>
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-500 mb-1.5">Kondisi Sesudah</label>
-                      <textarea name="kondisi_sesudah" value={formData.kondisi_sesudah} onChange={handleChange} required rows={2} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none transition-all resize-none font-medium text-slate-800"></textarea>
+                      <textarea name="kondisi_sesudah" value={formData.kondisi_sesudah} onChange={handleChange} required rows={2} className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none font-medium text-slate-800"></textarea>
                     </div>
                   </div>
                 </div>
@@ -415,9 +505,8 @@ export default function AdminDashboard() {
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <LinkIcon className="h-4 w-4 text-slate-400" />
                         </div>
-                        <input type="url" name="link" value={formData.link} onChange={handleChange} placeholder="https://drive.google.com/..." className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none transition-all font-medium text-slate-800" />
+                        <input type="url" name="link" value={formData.link} onChange={handleChange} placeholder="https://drive.google.com/..." className="w-full bg-white border border-slate-300 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:border-[#0B5E90] focus:ring-1 focus:ring-[#0B5E90] outline-none font-medium text-slate-800" />
                       </div>
-                      <p className="text-[10px] text-slate-500 mt-1.5">*Kosongkan jika tidak ada tautan luar yang dilampirkan.</p>
                     </div>
                     
                     <label className="flex items-start gap-3 cursor-pointer p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
