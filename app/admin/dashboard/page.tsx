@@ -30,6 +30,11 @@ export default function AdminDashboard() {
   }
   const [formData, setFormData] = useState(initialFormState)
 
+  const fetchData = async () => {
+    const { data } = await supabase.from('inovasi').select('*').order('created_at', { ascending: false })
+    if (data) setInovasiList(data)
+  }
+
   useEffect(() => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession()
@@ -50,11 +55,6 @@ export default function AdminDashboard() {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [router])
-
-  const fetchData = async () => {
-    const { data } = await supabase.from('inovasi').select('*').order('created_at', { ascending: false })
-    if (data) setInovasiList(data)
-  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -133,8 +133,8 @@ export default function AdminDashboard() {
         finalImageUrl = publicUrlData.publicUrl
       }
 
-      const dataToSave = { ...formData, logo: finalImageUrl }
-      delete dataToSave.id 
+      const { id, ...dataWithoutId } = formData
+      const dataToSave = { ...dataWithoutId, logo: finalImageUrl }
 
       if (modalMode === 'add') {
         const { error } = await supabase.from('inovasi').insert([dataToSave])

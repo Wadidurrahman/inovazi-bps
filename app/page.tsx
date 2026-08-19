@@ -46,7 +46,6 @@ export default function Home() {
   return (
     <main className="h-screen w-full overflow-hidden bg-[#0B5E90] text-slate-100 font-sans selection:bg-[#F26522] selection:text-white flex flex-col">
       <NavbarTemplate
-        selectedInovasi={selectedInovasi}
         onBack={() => setSelectedInovasi(null)}
         inovasiList={inovasiList}
         activeInovasiId={activeInovasiId}
@@ -65,7 +64,6 @@ export default function Home() {
               setActiveInovasiId(item.id)
             }}
             activeId={activeInovasiId}
-            onActiveChange={(id: any) => setActiveInovasiId(id)}
           />
         ) : (
           <InnovationDetailTemplate
