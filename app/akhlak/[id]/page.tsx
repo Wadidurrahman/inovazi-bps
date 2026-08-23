@@ -9,7 +9,7 @@ export default function AkhlakDetail() {
   const params = useParams();
   const akhlakId = params.id; 
 
-  const [inovasiList, setInovasiList] = useState([]);
+  const [inovasiList, setInovasiList] = useState<any[]>([]);
   const [akhlakName, setAkhlakName] = useState('Memuat...');
   const [isLoading, setIsLoading] = useState(true);
 

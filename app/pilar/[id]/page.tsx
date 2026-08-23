@@ -9,7 +9,7 @@ export default function PilarDetail() {
   const params = useParams();
   const pilarId = params.id; 
 
-  const [inovasiList, setInovasiList] = useState([]);
+  const [inovasiList, setInovasiList] = useState<any[]>([]);
   const [pilarName, setPilarName] = useState('Memuat...');
   const [isLoading, setIsLoading] = useState(true);
 
