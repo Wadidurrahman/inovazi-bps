@@ -1,131 +1,152 @@
-'use client'
-import { useState, useEffect } from 'react'
-import { ArrowRight, Database } from 'lucide-react'
+'use client';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { supabase } from './../../utils/supabase';
+import NavbarTemplate from './Navbar';
+import InnovationList from './InnovationList';
+import InnovationDetail from './InnovationDetail';
 
-export default function InnovationListTemplate({ inovasiList, onSelect, activeId }) {
-  const displayList = inovasiList && inovasiList.length > 0 ? inovasiList : []
+function MainContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  const activePreview = displayList.length > 0 
-    ? (displayList.find(item => item.id?.toString() === activeId?.toString()) || displayList[0]) 
-    : null
+  const previewId = searchParams.get('preview');
+  const detailId = searchParams.get('detail');
 
-  const [currentSlide, setCurrentSlide] = useState(0)
+  const [inovasiList, setInovasiList] = useState([]);
+  const [bgIndex, setBgIndex] = useState(0);
 
-  const sliderImages = activePreview ? [activePreview.foto_1, activePreview.foto_2, activePreview.foto_3].filter(Boolean) : []
+  const heroImages = [
+    '/bg-1.webp',
+    '/bg-2.webp',
+    '/bg-3.webp'
+  ];
 
   useEffect(() => {
-    if (sliderImages.length <= 1) return
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % sliderImages.length)
-    }, 3500)
-    return () => clearInterval(interval)
-  }, [sliderImages.length])
+      setBgIndex((prev) => (prev + 1) % heroImages.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
 
   useEffect(() => {
-    setCurrentSlide(0)
-  }, [activeId])
+    const fetchInovasi = async () => {
+      try {
+        const { data } = await supabase
+          .from('inovasi')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (data) setInovasiList(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchInovasi();
+  }, []);
 
-  if (!activePreview) {
-    return (
-      <div className="h-full w-full flex-1 relative flex flex-col items-center justify-center bg-[#F4F8FB] overflow-hidden py-20 min-h-[400px]">
-        <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 sm:px-10 max-w-2xl mx-auto">
-          <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center mb-6 border border-slate-200 shadow-sm hover:scale-105 transition-transform duration-300">
-            <Database className="w-8 h-8 text-[#F26522]" />
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-4 tracking-tight drop-shadow-sm">
-            Belum Ada Data Inovasi
-          </h1>
-          <p className="text-lg text-white font-medium leading-relaxed">
-            Sistem belum mendeteksi adanya data inovasi. Silakan login ke Dashboard Admin untuk menambahkan program inovasi baru agar tayang di sini.
-          </p>
-        </div>
-      </div>
-    )
-  }
+  const handleNavbarSelect = (id) => {
+    router.push(`/?preview=${id}`);
+  };
 
-  const imageUrl = activePreview.gambar || activePreview.logo
+  const handleShowDetail = (id) => {
+    router.push(`/?detail=${id}`);
+  };
+
+  const handleBackToPreview = () => {
+    router.push(`/?preview=true`); 
+  };
+
+  const handleBackToHome = () => {
+    router.push('/');
+  };
+
+  const activeDetail = inovasiList.find(i => i.id?.toString() === detailId?.toString());
 
   return (
-    <div className="h-full w-full flex-1 relative flex flex-col bg-[#F4F8FB] overflow-hidden">
-      <div className="absolute inset-0 w-full h-full overflow-hidden">
-        {imageUrl && (
-          <img
-            key={activePreview.id}
-            src={imageUrl}
-            alt=""
-            className="w-full h-full object-cover opacity-100 transition-transform duration-1000 ease-out hover:scale-105"
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#215882] via-[#215882]/70 to-transparent"></div>
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-slate-950 text-slate-800 flex flex-col select-none">
+      <div className="shrink-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <NavbarTemplate 
+          onBack={handleBackToHome}
+          inovasiList={inovasiList}
+          activeInovasiId={detailId || previewId}
+          onSelectInovasi={handleNavbarSelect}
+        />
       </div>
 
-      {/* Kontainer Utama yang Ditarik Agak Ke Tengah (max-w-6xl) agar nyaman dibaca */}
-      <div className="relative z-10 flex-1 flex flex-col justify-center items-center h-full w-full px-6 sm:px-10 py-12">
-        <div className="w-full max-w-5xl xl:max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-10">
-          
-          <div className="max-w-xl flex-1 w-full">
-            <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-md px-4 py-2 rounded-lg border border-slate-200 text-[#0B5E90] text-xs font-semibold w-fit mb-6 shadow-sm">
-              <Database className="w-4 h-4 text-[#F26522]" />
-              <span>Total {displayList.length} Inovasi Tersedia</span>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
-              <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider px-3 py-1 bg-white text-[#0B5E90] rounded border border-[#0B5E90]/20 backdrop-blur-sm">
-                {activePreview.pilar}
-              </span>
-              <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider px-3 py-1 bg-white text-[#F26522] rounded border border-[#F26522]/20 backdrop-blur-sm">
-                {activePreview.nilai_berakhlak}
-              </span>
-            </div>
-
-            <h1 key={`title-${activePreview.id}`} className="text-3xl sm:text-4xl font-extrabold text-white leading-tight mb-4 tracking-tight drop-shadow-md">
-              {activePreview.nama_inovasi}
-            </h1>
-
-            <p key={`desc-${activePreview.id}`} className="text-sm sm:text-base text-white/95 line-clamp-3 mb-8 font-medium leading-relaxed max-w-lg">
-              {activePreview.deskripsi}
-            </p>
-
-            <button
-              onClick={() => onSelect(activePreview)}
-              className="inline-flex items-center space-x-3 bg-[#F26522] hover:bg-[#d95a1e] text-white px-6 sm:px-8 py-3.5 rounded-lg transition-all duration-300 hover:-translate-y-1 font-bold shadow-lg shadow-[#F26522]/30 text-sm group"
-            >
-              <span>Lihat Detail Inovasi</span>
-              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 group-hover:translate-x-1" />
-            </button>
+      <main className="flex-1 relative overflow-hidden bg-slate-50">
+        {detailId && activeDetail ? (
+          <div className="absolute inset-0 w-full h-full overflow-y-auto custom-scrollbar animate-fadeIn bg-slate-50">
+             <InnovationDetail 
+               data={activeDetail}  
+               onBack={handleBackToPreview} 
+             />
           </div>
+        ) : previewId ? (
+          <div className="absolute inset-0 w-full h-full overflow-y-auto bg-slate-900 animate-fadeIn">
+             <InnovationList 
+               inovasiList={inovasiList} 
+               onSelectInovasi={handleShowDetail}
+               initialId={previewId !== 'true' ? previewId : null} 
+             />
+          </div>
+        ) : (
+          <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden bg-slate-950 animate-fadeIn">
+            <div className="absolute inset-0 z-0 bg-slate-900">
+              {heroImages.map((src, idx) => (
+                <img 
+                  key={idx}
+                  src={src} 
+                  alt={`Latar BPS ${idx + 1}`} 
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${idx === bgIndex ? 'opacity-100' : 'opacity-0'}`}
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80';
+                  }}
+                />
+              ))}
+              <div className="absolute inset-0 bg-black/40" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
+            </div>
 
-          {sliderImages.length > 0 && (
-            <div className="w-full max-w-md lg:w-[380px] h-[300px] sm:h-[340px] bg-slate-900/40 backdrop-blur-md rounded-2xl border border-white/20 p-3 shadow-2xl flex flex-col relative overflow-hidden shrink-0">
-              <div className="relative w-full h-full rounded-xl overflow-hidden bg-black/40">
-                {sliderImages.map((imgSrc, idx) => (
-                  <div
-                    key={idx}
-                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                      idx === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
-                    }`}
-                  >
-                    <img src={imgSrc} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />
-                  </div>
-                ))}
+            <div className="relative z-10 w-full max-w-3xl mx-auto px-6 text-center flex flex-col items-center">
+              <div className="mb-4 inline-block drop-shadow-md">
+                <span className="px-4 py-1.5 rounded-full bg-white/20 border border-white/30 text-orange-400 text-[10px] sm:text-xs font-black uppercase tracking-widest backdrop-blur-md shadow-lg">
+                  SISTEM INFORMASI INOVAZI
+                </span>
               </div>
+              
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-4 leading-tight drop-shadow-lg">
+                BPS Kota <br className="sm:hidden" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 drop-shadow-lg">
+                  Probolinggo
+                </span>
+              </h1>
+              
+              <p className="text-white text-sm sm:text-base max-w-xl mx-auto mb-8 font-medium leading-snug drop-shadow-md">
+                Direktori pusat informasi inovasi pelayanan publik. Silakan eksplorasi ragam program unggulan melalui navigasi <strong className="text-orange-400 font-bold">Eksplorasi Menu</strong> di sudut kanan atas layar Anda.
+              </p>
 
-              <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full">
-                {sliderImages.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentSlide(idx)}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      idx === currentSlide ? 'w-6 bg-[#F26522]' : 'w-2 bg-white/60 hover:bg-white'
-                    }`}
-                    aria-label={`Slide ${idx + 1}`}
-                  />
-                ))}
+              <div className="inline-flex items-center bg-white/20 backdrop-blur-xl border border-white/30 px-6 py-3 rounded-2xl shadow-xl">
+                <div className="flex flex-col text-right border-r border-white/30 pr-4 mr-4">
+                  <span className="text-3xl sm:text-4xl font-black text-white leading-none drop-shadow-md">{inovasiList.length}</span>
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="text-xs font-bold text-orange-400 uppercase tracking-wider mb-0.5 drop-shadow-md">INOVASI AKTIF</span>
+                  <span className="text-[10px] font-bold text-slate-100 uppercase tracking-widest drop-shadow-md">TELAH TERDAFTAR</span>
+                </div>
               </div>
             </div>
-          )}
-        </div>
-      </div>
+          </div>
+        )}
+      </main>
     </div>
-  )
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div className="fixed inset-0 w-screen h-screen bg-slate-950"></div>}>
+      <MainContent />
+    </Suspense>
+  );
 }
