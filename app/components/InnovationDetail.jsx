@@ -1,14 +1,15 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft, BarChart3 } from 'lucide-react'
 
 export default function InnovationDetailTemplate({ data, onBack }) {
   const [scrollProgress, setScrollProgress] = useState(0)
   const containerRef = useRef(null)
 
-  // State untuk slider foto dokumentasi di halaman detail
   const [currentDetailSlide, setCurrentDetailSlide] = useState(0)
   const detailSliderImages = data ? [data.foto_1, data.foto_2, data.foto_3].filter(Boolean) : []
+
+  const bannerImg = data?.gambar || '/bg-1.webp'
 
   useEffect(() => {
     if (detailSliderImages.length <= 1) return
@@ -49,6 +50,8 @@ export default function InnovationDetailTemplate({ data, onBack }) {
     }
   }, [data])
 
+  if (!data) return null;
+
   return (
     <div ref={containerRef} className="w-full h-full bg-white overflow-y-auto scroll-smooth custom-scrollbar relative font-sans text-slate-800 flex flex-col items-center">
       
@@ -64,17 +67,34 @@ export default function InnovationDetailTemplate({ data, onBack }) {
         }
       `}} />
 
-      <div className="sticky top-0 z-50 w-full h-1 bg-slate-100">
+      <div className="sticky top-0 z-50 w-full h-1 bg-slate-100 shrink-0">
         <div 
           className="h-full bg-[#0B5E90] transition-all duration-150 ease-out"
           style={{ width: `${scrollProgress}%` }}
         ></div>
       </div>
 
-      {/* CONTAINER UTAMA DITARIK KE TENGAH DENGAN MAKSIMAL LEBAR YANG PAS */}
-      <div className="w-full max-w-6xl mx-auto px-6 sm:px-12 pt-8 pb-16">
+      <div className="relative w-full h-[35vh] min-h-[250px] shrink-0 bg-slate-900">
+        <img 
+          src={bannerImg} 
+          alt="Banner Inovasi" 
+          className="w-full h-full object-cover opacity-60"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/20 to-transparent" />
         
-        <header className="scroll-reveal mb-6">
+        <div className="absolute top-6 left-6 sm:left-12 z-10">
+          <button 
+            onClick={onBack}
+            className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-5 py-2.5 rounded-full text-xs font-bold transition-all shadow-md border border-white/30 uppercase tracking-widest"
+          >
+            <ArrowLeft className="w-4 h-4" /> Kembali
+          </button>
+        </div>
+      </div>
+
+      <div className="w-full max-w-6xl mx-auto px-6 sm:px-12 pb-16 -mt-16 relative z-10">
+        
+        <header className="scroll-reveal mb-8 bg-white p-6 sm:p-8 rounded-2xl shadow-xl border border-slate-100">
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 bg-[#0B5E90] text-white rounded-sm">
               {data.pilar}
@@ -93,13 +113,10 @@ export default function InnovationDetailTemplate({ data, onBack }) {
           </p>
         </header>
 
-        <div className="w-full h-px bg-slate-200 my-6 scroll-reveal"></div>
-
         <div className="flex flex-col lg:flex-row gap-12 justify-center">
           
-          {/* ARTIKEL KIRI */}
           <div className="lg:w-[65%]">
-            <article className="space-y-6 text-[15px] text-slate-700 leading-relaxed text-justify">
+            <article className="space-y-8 text-[15px] text-slate-700 leading-relaxed text-justify">
               
               <section className="scroll-reveal">
                 <h2 className="text-lg font-bold text-slate-900 mb-1.5">Latar Belakang & Deskripsi</h2>
@@ -148,6 +165,21 @@ export default function InnovationDetailTemplate({ data, onBack }) {
                 <p className="italic">{data.dampak}</p>
               </section>
 
+              {data.grafik && (
+                <section className="scroll-reveal mt-10">
+                  <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <BarChart3 className="w-5 h-5 text-[#0B5E90]" /> Grafik Kinerja Inovasi
+                  </h2>
+                  <div className="w-full bg-slate-50 p-2 sm:p-4 rounded-xl border border-slate-200 shadow-sm flex justify-center">
+                    <img 
+                      src={data.grafik} 
+                      alt="Grafik Kinerja" 
+                      className="w-full max-h-[500px] object-contain rounded-lg"
+                    />
+                  </div>
+                </section>
+              )}
+
             </article>
 
             <div className="pt-8 mt-8 border-t border-slate-200 flex justify-end scroll-reveal">
@@ -161,11 +193,9 @@ export default function InnovationDetailTemplate({ data, onBack }) {
             </div>
           </div>
 
-          {/* SIDEBAR KANAN (LOGO & SLIDER DOKUMENTASI 3 FOTO) */}
           <div className="lg:w-[32%]">
             <div className="sticky top-6 scroll-reveal space-y-6">
               
-              {/* 1. LOGO INOVASI */}
               {data.logo && (
                 <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 shadow-xs">
                   <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Logo Inovasi</h3>
@@ -175,7 +205,6 @@ export default function InnovationDetailTemplate({ data, onBack }) {
                 </div>
               )}
 
-              {/* 2. SLIDER FOTO DOKUMENTASI (3 FOTO) */}
               {detailSliderImages.length > 0 && (
                 <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 shadow-xs">
                   <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Dokumentasi Kegiatan</h3>
@@ -190,8 +219,6 @@ export default function InnovationDetailTemplate({ data, onBack }) {
                         <img src={imgUrl} alt={`Dokumentasi ${idx + 1}`} className="w-full h-full object-cover" />
                       </div>
                     ))}
-
-                    {/* Titik Dots Indikator */}
                     <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 bg-black/40 backdrop-blur-xs px-2.5 py-1 rounded-full">
                       {detailSliderImages.map((_, idx) => (
                         <button
@@ -208,36 +235,16 @@ export default function InnovationDetailTemplate({ data, onBack }) {
                 </div>
               )}
 
-              {/* 3. DOKUMEN REFERENSI */}
               <div className="space-y-4 bg-slate-50 border border-slate-200 rounded-lg p-4 shadow-xs">
                 <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-200 pb-2">
                   Dokumen Referensi
                 </h3>
-                
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold text-slate-600">Arsip Media Drive</span>
                   <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm ${data.dokumentasi ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
                     {data.dokumentasi ? 'Tersedia' : 'Kosong'}
                   </span>
                 </div>
-
-                {data.link && (
-                  <div className="mt-4 pt-4 border-t border-slate-200">
-                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Tautan Lampiran</h4>
-                    <a 
-                      href={data.link} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="flex items-center justify-between w-full bg-white border border-slate-200 hover:border-[#0B5E90] hover:shadow-sm rounded p-3 transition-all group"
-                    >
-                      <div className="flex flex-col overflow-hidden mr-2">
-                        <span className="text-xs font-bold text-slate-700 group-hover:text-[#0B5E90] truncate transition-colors">Tautan Eksternal</span>
-                        <span className="text-[10px] text-slate-500 truncate mt-0.5">{data.link}</span>
-                      </div>
-                      <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-[#0B5E90] shrink-0 transition-colors" />
-                    </a>
-                  </div>
-                )}
               </div>
 
             </div>

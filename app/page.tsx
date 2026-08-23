@@ -1,20 +1,15 @@
 'use client';
-import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
 import NavbarTemplate from './components/Navbar';
 import InnovationList from './components/InnovationList';
 import InnovationDetail from './components/InnovationDetail';
 
-function MainContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  const previewId = searchParams.get('preview');
-  const detailId = searchParams.get('detail');
-
+export default function HomePage() {
   const [inovasiList, setInovasiList] = useState([]);
   const [bgIndex, setBgIndex] = useState(0);
+  
+  const [viewState, setViewState] = useState({ view: 'home', id: null });
 
   const heroImages = [
     '/bg-1.webp',
@@ -45,23 +40,36 @@ function MainContent() {
     fetchInovasi();
   }, []);
 
+  useEffect(() => {
+    const search = new URLSearchParams(window.location.search);
+    if (search.get('detail')) {
+      setViewState({ view: 'detail', id: search.get('detail') });
+    } else if (search.get('preview')) {
+      setViewState({ view: 'preview', id: search.get('preview') !== 'true' ? search.get('preview') : null });
+    }
+  }, []);
+
   const handleNavbarSelect = (id) => {
-    router.push(`/?preview=${id}`);
+    setViewState({ view: 'preview', id });
+    window.history.pushState(null, '', `/?preview=${id}`);
   };
 
   const handleShowDetail = (id) => {
-    router.push(`/?detail=${id}`);
+    setViewState({ view: 'detail', id });
+    window.history.pushState(null, '', `/?detail=${id}`);
   };
 
   const handleBackToPreview = () => {
-    router.push(`/?preview=true`); 
+    setViewState({ view: 'preview', id: null });
+    window.history.pushState(null, '', `/?preview=true`);
   };
 
   const handleBackToHome = () => {
-    router.push('/');
+    setViewState({ view: 'home', id: null });
+    window.history.pushState(null, '', '/');
   };
 
-  const activeDetail = inovasiList.find(i => i.id?.toString() === detailId?.toString());
+  const activeDetail = inovasiList.find(i => i.id?.toString() === viewState.id?.toString());
 
   return (
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-slate-950 text-slate-800 flex flex-col select-none">
@@ -69,69 +77,70 @@ function MainContent() {
         <NavbarTemplate 
           onBack={handleBackToHome}
           inovasiList={inovasiList}
-          activeInovasiId={detailId || previewId}
+          activeInovasiId={viewState.id}
           onSelectInovasi={handleNavbarSelect}
         />
       </div>
 
       <main className="flex-1 relative overflow-hidden bg-slate-50">
-        {detailId && activeDetail ? (
+        {viewState.view === 'detail' && activeDetail ? (
           <div className="absolute inset-0 w-full h-full overflow-y-auto custom-scrollbar animate-fadeIn bg-slate-50">
              <InnovationDetail 
                data={activeDetail}  
                onBack={handleBackToPreview} 
              />
           </div>
-        ) : previewId ? (
+        ) : viewState.view === 'preview' ? (
           <div className="absolute inset-0 w-full h-full overflow-y-auto bg-slate-900 animate-fadeIn">
              <InnovationList 
                inovasiList={inovasiList} 
                onSelectInovasi={handleShowDetail}
-               initialId={previewId !== 'true' ? previewId : null} 
+               initialId={viewState.id} 
              />
           </div>
         ) : (
           <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden bg-slate-950 animate-fadeIn">
-            <div className="absolute inset-0 z-0 bg-slate-950">
+            <div className="absolute inset-0 z-0 bg-slate-900">
               {heroImages.map((src, idx) => (
                 <img 
                   key={idx}
                   src={src} 
                   alt={`Latar BPS ${idx + 1}`} 
-                  className={`absolute inset-0 w-full h-full object-cover filter brightness-[0.4] contrast-125 saturate-100 scale-105 transition-opacity duration-[2000ms] ease-in-out ${idx === bgIndex ? 'opacity-100' : 'opacity-0'}`}
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${idx === bgIndex ? 'opacity-100' : 'opacity-0'}`}
                   onError={(e) => {
                     e.currentTarget.src = 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80';
                   }}
                 />
               ))}
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-[#0B5E90]/60 to-slate-900/80 mix-blend-multiply" />
+              <div className="absolute inset-0 bg-black/40" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
             </div>
 
             <div className="relative z-10 w-full max-w-3xl mx-auto px-6 text-center flex flex-col items-center">
-              <div className="mb-4 inline-block">
-                <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-orange-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest backdrop-blur-md shadow-sm">
+              <div className="mb-4 inline-block drop-shadow-md">
+                <span className="px-4 py-1.5 rounded-full bg-white/20 border border-white/30 text-orange-400 text-[10px] sm:text-xs font-black uppercase tracking-widest backdrop-blur-md shadow-lg">
                   SISTEM INFORMASI INOVAZI
                 </span>
               </div>
               
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-4 leading-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-4 leading-tight drop-shadow-lg">
                 BPS Kota <br className="sm:hidden" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 drop-shadow-lg">
                   Probolinggo
                 </span>
               </h1>
               
-              <p className="text-slate-300 text-sm sm:text-base max-w-xl mx-auto mb-8 font-normal leading-snug">
-                Direktori pusat informasi inovasi pelayanan publik. Silakan eksplorasi ragam program unggulan melalui navigasi <strong className="text-white font-semibold">Eksplorasi Menu</strong> di sudut kanan atas layar Anda.
+              <p className="text-white text-sm sm:text-base max-w-xl mx-auto mb-8 font-medium leading-snug drop-shadow-md">
+                Direktori pusat informasi inovasi pelayanan publik. Silakan eksplorasi ragam program unggulan melalui navigasi <strong className="text-orange-400 font-bold">Eksplorasi Menu</strong> di sudut kanan atas layar Anda.
               </p>
 
-              <div className="inline-flex items-center bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-3 rounded-2xl shadow-xl">
-                <div className="flex flex-col text-right border-r border-white/10 pr-4 mr-4">
-                  <span className="text-3xl sm:text-4xl font-black text-white leading-none">{inovasiList.length}</span>
+              <div className="inline-flex items-center bg-white/20 backdrop-blur-xl border border-white/30 px-6 py-3 rounded-2xl shadow-xl">
+                <div className="flex flex-col text-right border-r border-white/30 pr-4 mr-4">
+                  <span className="text-3xl sm:text-4xl font-black text-white leading-none drop-shadow-md">{inovasiList.length}</span>
                 </div>
                 <div className="flex flex-col text-left">
-                  <span className="text-xs font-bold text-orange-400 uppercase tracking-wider mb-0.5">INOVASI AKTIF</span>
-                  <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">TELAH TERDAFTAR</span>
+                  <span className="text-xs font-bold text-orange-400 uppercase tracking-wider mb-0.5 drop-shadow-md">INOVASI AKTIF</span>
+                  <span className="text-[10px] font-bold text-slate-100 uppercase tracking-widest drop-shadow-md">TELAH TERDAFTAR</span>
                 </div>
               </div>
             </div>
@@ -139,13 +148,5 @@ function MainContent() {
         )}
       </main>
     </div>
-  );
-}
-
-export default function HomePage() {
-  return (
-    <Suspense fallback={<div className="fixed inset-0 w-screen h-screen bg-slate-950"></div>}>
-      <MainContent />
-    </Suspense>
   );
 }
