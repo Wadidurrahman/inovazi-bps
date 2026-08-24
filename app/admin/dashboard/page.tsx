@@ -198,6 +198,7 @@ export default function AdminDashboard() {
   }
 
   const uniquePilars = ['Semua', ...Array.from(new Set(inovasiList.map(item => item.pilar).filter(Boolean)))]
+  const uniqueAkhlaks = Array.from(new Set(inovasiList.map(item => item.nilai_berakhlak).filter(Boolean)))
 
   const filteredData = inovasiList.filter(item => {
     const matchesSearch = item.nama_inovasi.toLowerCase().includes(searchTerm.toLowerCase())
@@ -441,11 +442,39 @@ export default function AdminDashboard() {
                     </div>
                     <div>
                       <label className="block text-[11px] font-semibold text-slate-600 mb-1">Pilar Utama</label>
-                      <input type="text" name="pilar" value={formData.pilar} onChange={handleChange} required className="w-full bg-white border border-slate-200 rounded px-3 py-2 text-xs focus:border-[#0B5E90] outline-none text-slate-800 transition-colors" />
+                      <input 
+                        type="text" 
+                        name="pilar" 
+                        list="pilar-options" 
+                        value={formData.pilar} 
+                        onChange={handleChange} 
+                        placeholder="Pilih atau ketik pilar baru..." 
+                        required 
+                        className="w-full bg-white border border-slate-200 rounded px-3 py-2 text-xs focus:border-[#0B5E90] outline-none text-slate-800 transition-colors" 
+                      />
+                      <datalist id="pilar-options">
+                        {uniquePilars.filter(p => p !== 'Semua').map((pilar, idx) => (
+                          <option key={idx} value={pilar} />
+                        ))}
+                      </datalist>
                     </div>
                     <div>
                       <label className="block text-[11px] font-semibold text-slate-600 mb-1">Nilai BerAKHLAK</label>
-                      <input type="text" name="nilai_berakhlak" value={formData.nilai_berakhlak} onChange={handleChange} required className="w-full bg-white border border-slate-200 rounded px-3 py-2 text-xs focus:border-[#0B5E90] outline-none text-slate-800 transition-colors" />
+                      <input 
+                        type="text" 
+                        name="nilai_berakhlak" 
+                        list="akhlak-options" 
+                        value={formData.nilai_berakhlak} 
+                        onChange={handleChange} 
+                        placeholder="Pilih atau ketik nilai baru..." 
+                        required 
+                        className="w-full bg-white border border-slate-200 rounded px-3 py-2 text-xs focus:border-[#0B5E90] outline-none text-slate-800 transition-colors" 
+                      />
+                      <datalist id="akhlak-options">
+                        {uniqueAkhlaks.map((akhlak, idx) => (
+                          <option key={idx} value={akhlak} />
+                        ))}
+                      </datalist>
                     </div>
                     <div>
                       <label className="block text-[11px] font-semibold text-slate-600 mb-1">Timeline / Kuartal</label>

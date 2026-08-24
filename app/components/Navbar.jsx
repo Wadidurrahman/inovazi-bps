@@ -1,46 +1,23 @@
 'use client';
-import { UserCircle, Building2, LayoutGrid, X, Loader2 } from 'lucide-react';
+import { UserCircle, Building2, LayoutGrid, X, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { supabase } from '../../utils/supabase';
 
 export default function NavbarTemplate({ onBack, inovasiList, activeInovasiId, onSelectInovasi }) {
   const [imageError, setImageError] = useState(false);
   const [logoSrc, setLogoSrc] = useState('/logoBPS.jpg');
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [pilarList, setPilarList] = useState([]);
-  const [akhlakList, setAkhlakList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
 
   const displayList = inovasiList && inovasiList.length > 0 ? inovasiList : [];
 
+  // Mengekstrak kategori pilar dan akhlak secara otomatis langsung dari data inovasi
+  const pilarList = Array.from(new Set(displayList.map(item => item.pilar).filter(Boolean)));
+  const akhlakList = Array.from(new Set(displayList.map(item => item.nilai_berakhlak).filter(Boolean)));
+
   useEffect(() => {
     setMounted(true);
-    const fetchMenuData = async () => {
-      setIsLoading(true);
-      try {
-        const { data: dataPilar } = await supabase
-          .from('kategori_pilar') 
-          .select('id, nama_pilar') 
-          .order('created_at', { ascending: true });
-        if (dataPilar) setPilarList(dataPilar);
-
-        const { data: dataAkhlak } = await supabase
-          .from('kategori_akhlak')
-          .select('id, nama_akhlak')
-          .order('created_at', { ascending: true });
-        if (dataAkhlak) setAkhlakList(dataAkhlak);
-
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchMenuData();
   }, []);
 
   return (
@@ -54,7 +31,10 @@ export default function NavbarTemplate({ onBack, inovasiList, activeInovasiId, o
                   src={logoSrc}
                   alt="Logo BPS" 
                   className="h-full w-full object-contain p-1.5"
-                  onError={() => setImageError(true)}
+                  onError={() => {
+                    if (logoSrc === '/logoBPS.jpg') setLogoSrc('/logoBPS.png');
+                    else setImageError(true);
+                  }}
                 />
               ) : (
                 <Building2 className="w-6 h-6 text-[#0B5E90]" />
@@ -86,7 +66,6 @@ export default function NavbarTemplate({ onBack, inovasiList, activeInovasiId, o
         </div>
       </header>
 
-      {/* INI KUNCI PERBAIKANNYA: Menggunakan createPortal agar terpisah dari Navbar */}
       {mounted && isPopupOpen && createPortal(
         <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fadeIn">
           <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-slideUp flex flex-col max-h-[90vh]">
@@ -104,17 +83,16 @@ export default function NavbarTemplate({ onBack, inovasiList, activeInovasiId, o
               <div>
                 <h3 className="text-sm font-bold text-orange-500 uppercase tracking-widest mb-4">Pilar</h3>
                 <div className="space-y-2">
-                  {isLoading ? (
-                    <div className="flex items-center gap-2 text-sm text-slate-400"><Loader2 className="w-4 h-4 animate-spin"/> Memuat...</div>
-                  ) : pilarList.length > 0 ? (
-                    pilarList.map((pilar) => (
+                  {pilarList.length > 0 ? (
+                    pilarList.map((pilar, idx) => (
                       <Link 
-                        key={pilar.id} 
-                        href={`/pilar/${pilar.id}`} 
+                        key={idx} 
+                        href={`/pilar/${encodeURIComponent(pilar)}`} 
                         onClick={() => setIsPopupOpen(false)}
-                        className="block p-3 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all font-medium text-slate-700"
+                        className="block p-3 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all font-medium text-slate-700 flex items-center justify-between group"
                       >
-                        {pilar.nama_pilar}
+                        <span>{pilar}</span>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-orange-500 transition-colors" />
                       </Link>
                     ))
                   ) : (
@@ -124,19 +102,18 @@ export default function NavbarTemplate({ onBack, inovasiList, activeInovasiId, o
               </div>
 
               <div>
-                <h3 className="text-sm font-bold text-[#0B5E90] uppercase tracking-widest mb-4">Ahklak</h3>
+                <h3 className="text-sm font-bold text-[#0B5E90] uppercase tracking-widest mb-4">Akhlak</h3>
                 <div className="space-y-2">
-                  {isLoading ? (
-                    <div className="flex items-center gap-2 text-sm text-slate-400"><Loader2 className="w-4 h-4 animate-spin"/> Memuat...</div>
-                  ) : akhlakList.length > 0 ? (
-                    akhlakList.map((akhlak) => (
+                  {akhlakList.length > 0 ? (
+                    akhlakList.map((akhlak, idx) => (
                       <Link 
-                        key={akhlak.id} 
-                        href={`/akhlak/${akhlak.id}`}
+                        key={idx} 
+                        href={`/akhlak/${encodeURIComponent(akhlak)}`}
                         onClick={() => setIsPopupOpen(false)}
-                        className="block p-3 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all font-medium text-slate-700"
+                        className="block p-3 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all font-medium text-slate-700 flex items-center justify-between group"
                       >
-                        {akhlak.nama_akhlak}
+                        <span>{akhlak}</span>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#0B5E90] transition-colors" />
                       </Link>
                     ))
                   ) : (
