@@ -1,23 +1,20 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { supabase } from '../utils/supabase';
-
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { supabase } from './../utils/supabase';
 import NavbarTemplate from './components/Navbar';
 import InnovationList from './components/InnovationList';
 import InnovationDetail from './components/InnovationDetail';
 
-// TRIK RAHASIA: Memaksa TypeScript agar tidak memeriksa tipe data komponen JSX
-const NavbarComponent = NavbarTemplate as any;
-const InnovationListComponent = InnovationList as any;
-const InnovationDetailComponent = InnovationDetail as any;
+function MainContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-export default function HomePage() {
-  const [inovasiList, setInovasiList] = useState<any[]>([]);
-  const [bgIndex, setBgIndex] = useState<number>(0);
-  
-  const [currentView, setCurrentView] = useState<string>('home');
-  const [currentId, setCurrentId] = useState<any>(null);
-  const [isClient, setIsClient] = useState(false);
+  const previewId = searchParams.get('preview');
+  const detailId = searchParams.get('detail');
+
+  const [inovasiList, setInovasiList] = useState([]);
+  const [bgIndex, setBgIndex] = useState(0);
 
   const heroImages = [
     '/bg-1.webp',
@@ -26,7 +23,13 @@ export default function HomePage() {
   ];
 
   useEffect(() => {
-    setIsClient(true);
+    const interval = setInterval(() => {
+      setBgIndex((prev) => (prev + 1) % heroImages.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
+
+  useEffect(() => {
     const fetchInovasi = async () => {
       try {
         const { data } = await supabase
@@ -42,75 +45,51 @@ export default function HomePage() {
     fetchInovasi();
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setBgIndex((prev) => (prev + 1) % heroImages.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, [heroImages.length]);
-
-  // HANYA BACA URL 1X SAAT PERTAMA KALI DIBUKA
-  useEffect(() => {
-    const search = new URLSearchParams(window.location.search);
-    const detailId = search.get('detail');
-    const previewId = search.get('preview');
-
-    if (detailId) {
-      setCurrentView('detail');
-      setCurrentId(detailId);
-    } else if (previewId) {
-      setCurrentView('preview');
-      setCurrentId(previewId !== 'true' ? previewId : null);
-    }
-  }, []);
-
-  // NAVIGASI MURNI REACT STATE (DIJAMIN 100% TIDAK FREEZE KARENA TIDAK MENGUBAH URL)
-  const navigateTo = (view: string, id: any = null) => {
-    setCurrentView(view);
-    setCurrentId(id);
+  const handleNavbarSelect = (id) => {
+    router.push(`/?preview=${id}`);
   };
 
-  const activeDetail: any = inovasiList.find(i => i.id?.toString() === currentId?.toString());
+  const handleShowDetail = (id) => {
+    router.push(`/?detail=${id}`);
+  };
 
-  if (!isClient) return <div className="fixed inset-0 w-screen h-screen bg-slate-950"></div>;
+  const handleBackToPreview = () => {
+    router.push(`/?preview=true`); 
+  };
+
+  const handleBackToHome = () => {
+    router.push('/');
+  };
+
+  const activeDetail = inovasiList.find(i => i.id?.toString() === detailId?.toString());
 
   return (
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-slate-950 text-slate-800 flex flex-col select-none">
       <div className="shrink-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
-        <NavbarComponent 
-          onBack={() => navigateTo('home')}
+        <NavbarTemplate 
+          onBack={handleBackToHome}
           inovasiList={inovasiList}
-          activeInovasiId={currentId}
-          onSelectInovasi={(id: any) => navigateTo('preview', id)} 
+          activeInovasiId={detailId || previewId}
+          onSelectInovasi={handleNavbarSelect}
         />
       </div>
 
       <main className="flex-1 relative overflow-hidden bg-slate-50">
-        
-        {currentView === 'detail' ? (
+        {detailId && activeDetail ? (
           <div className="absolute inset-0 w-full h-full overflow-y-auto custom-scrollbar animate-fadeIn bg-slate-50">
-             {activeDetail ? (
-               <InnovationDetailComponent 
-                 data={activeDetail}  
-                 onBack={() => navigateTo('preview', currentId)} 
-               />
-             ) : (
-               <div className="w-full h-full flex flex-col items-center justify-center space-y-4">
-                 <div className="w-10 h-10 border-4 border-[#0B5E90] border-t-transparent rounded-full animate-spin"></div>
-                 <p className="text-slate-500 font-bold tracking-widest text-xs uppercase animate-pulse">Menyiapkan Data...</p>
-               </div>
-             )}
-          </div>
-
-        ) : currentView === 'preview' ? (
-          <div className="absolute inset-0 w-full h-full overflow-y-auto bg-slate-900 animate-fadeIn">
-             <InnovationListComponent 
-               inovasiList={inovasiList} 
-               onSelectInovasi={(id: any) => navigateTo('detail', id)}
-               initialId={currentId} 
+             <InnovationDetail 
+               data={activeDetail}  
+               onBack={handleBackToPreview} 
              />
           </div>
-
+        ) : previewId ? (
+          <div className="absolute inset-0 w-full h-full overflow-y-auto bg-slate-900 animate-fadeIn">
+             <InnovationList 
+               inovasiList={inovasiList} 
+               onSelectInovasi={handleShowDetail}
+               initialId={previewId !== 'true' ? previewId : null} 
+             />
+          </div>
         ) : (
           <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden bg-slate-950 animate-fadeIn">
             <div className="absolute inset-0 z-0 bg-slate-900">
@@ -149,9 +128,7 @@ export default function HomePage() {
 
               <div className="inline-flex items-center bg-white/20 backdrop-blur-xl border border-white/30 px-6 py-3 rounded-2xl shadow-xl">
                 <div className="flex flex-col text-right border-r border-white/30 pr-4 mr-4">
-                  <span className="text-3xl sm:text-4xl font-black text-white leading-none drop-shadow-md">
-                    {inovasiList.length > 0 ? inovasiList.length : '...'}
-                  </span>
+                  <span className="text-3xl sm:text-4xl font-black text-white leading-none drop-shadow-md">{inovasiList.length}</span>
                 </div>
                 <div className="flex flex-col text-left">
                   <span className="text-xs font-bold text-orange-400 uppercase tracking-wider mb-0.5 drop-shadow-md">INOVASI AKTIF</span>
@@ -163,5 +140,13 @@ export default function HomePage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div className="fixed inset-0 w-screen h-screen bg-slate-950"></div>}>
+      <MainContent />
+    </Suspense>
   );
 }
