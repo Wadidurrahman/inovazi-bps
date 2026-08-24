@@ -15,7 +15,9 @@ export default function HomePage() {
   const [inovasiList, setInovasiList] = useState<any[]>([]);
   const [bgIndex, setBgIndex] = useState<number>(0);
   
-  const [viewState, setViewState] = useState<{ view: string; id: any }>({ view: 'home', id: null });
+  const [currentView, setCurrentView] = useState<string>('home');
+  const [currentId, setCurrentId] = useState<any>(null);
+  const [isClient, setIsClient] = useState(false);
 
   const heroImages = [
     '/bg-1.webp',
@@ -24,13 +26,7 @@ export default function HomePage() {
   ];
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setBgIndex((prev) => (prev + 1) % heroImages.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, [heroImages.length]);
-
-  useEffect(() => {
+    setIsClient(true);
     const fetchInovasi = async () => {
       try {
         const { data } = await supabase
@@ -47,63 +43,74 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      setBgIndex((prev) => (prev + 1) % heroImages.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
+
+  // HANYA BACA URL 1X SAAT PERTAMA KALI DIBUKA
+  useEffect(() => {
     const search = new URLSearchParams(window.location.search);
-    if (search.get('detail')) {
-      setViewState({ view: 'detail', id: search.get('detail') });
-    } else if (search.get('preview')) {
-      setViewState({ view: 'preview', id: search.get('preview') !== 'true' ? search.get('preview') : null });
+    const detailId = search.get('detail');
+    const previewId = search.get('preview');
+
+    if (detailId) {
+      setCurrentView('detail');
+      setCurrentId(detailId);
+    } else if (previewId) {
+      setCurrentView('preview');
+      setCurrentId(previewId !== 'true' ? previewId : null);
     }
   }, []);
 
-  const handleNavbarSelect = (id: any) => {
-    setViewState({ view: 'preview', id });
-    window.history.pushState(null, '', `/?preview=${id}`);
+  // NAVIGASI MURNI REACT STATE (DIJAMIN 100% TIDAK FREEZE KARENA TIDAK MENGUBAH URL)
+  const navigateTo = (view: string, id: any = null) => {
+    setCurrentView(view);
+    setCurrentId(id);
   };
 
-  const handleShowDetail = (id: any) => {
-    setViewState({ view: 'detail', id });
-    window.history.pushState(null, '', `/?detail=${id}`);
-  };
+  const activeDetail: any = inovasiList.find(i => i.id?.toString() === currentId?.toString());
 
-  const handleBackToPreview = () => {
-    setViewState({ view: 'preview', id: null });
-    window.history.pushState(null, '', `/?preview=true`);
-  };
-
-  const handleBackToHome = () => {
-    setViewState({ view: 'home', id: null });
-    window.history.pushState(null, '', '/');
-  };
-
-  const activeDetail: any = inovasiList.find(i => i.id?.toString() === viewState.id?.toString());
+  if (!isClient) return <div className="fixed inset-0 w-screen h-screen bg-slate-950"></div>;
 
   return (
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-slate-950 text-slate-800 flex flex-col select-none">
       <div className="shrink-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
         <NavbarComponent 
-          onBack={handleBackToHome}
+          onBack={() => navigateTo('home')}
           inovasiList={inovasiList}
-          activeInovasiId={viewState.id}
-          onSelectInovasi={handleNavbarSelect}
+          activeInovasiId={currentId}
+          onSelectInovasi={(id: any) => navigateTo('preview', id)} 
         />
       </div>
 
       <main className="flex-1 relative overflow-hidden bg-slate-50">
-        {viewState.view === 'detail' && activeDetail ? (
+        
+        {currentView === 'detail' ? (
           <div className="absolute inset-0 w-full h-full overflow-y-auto custom-scrollbar animate-fadeIn bg-slate-50">
-             <InnovationDetailComponent 
-               data={activeDetail}  
-               onBack={handleBackToPreview} 
-             />
+             {activeDetail ? (
+               <InnovationDetailComponent 
+                 data={activeDetail}  
+                 onBack={() => navigateTo('preview', currentId)} 
+               />
+             ) : (
+               <div className="w-full h-full flex flex-col items-center justify-center space-y-4">
+                 <div className="w-10 h-10 border-4 border-[#0B5E90] border-t-transparent rounded-full animate-spin"></div>
+                 <p className="text-slate-500 font-bold tracking-widest text-xs uppercase animate-pulse">Menyiapkan Data...</p>
+               </div>
+             )}
           </div>
-        ) : viewState.view === 'preview' ? (
+
+        ) : currentView === 'preview' ? (
           <div className="absolute inset-0 w-full h-full overflow-y-auto bg-slate-900 animate-fadeIn">
              <InnovationListComponent 
                inovasiList={inovasiList} 
-               onSelectInovasi={handleShowDetail}
-               initialId={viewState.id} 
+               onSelectInovasi={(id: any) => navigateTo('detail', id)}
+               initialId={currentId} 
              />
           </div>
+
         ) : (
           <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden bg-slate-950 animate-fadeIn">
             <div className="absolute inset-0 z-0 bg-slate-900">
@@ -142,7 +149,9 @@ export default function HomePage() {
 
               <div className="inline-flex items-center bg-white/20 backdrop-blur-xl border border-white/30 px-6 py-3 rounded-2xl shadow-xl">
                 <div className="flex flex-col text-right border-r border-white/30 pr-4 mr-4">
-                  <span className="text-3xl sm:text-4xl font-black text-white leading-none drop-shadow-md">{inovasiList.length}</span>
+                  <span className="text-3xl sm:text-4xl font-black text-white leading-none drop-shadow-md">
+                    {inovasiList.length > 0 ? inovasiList.length : '...'}
+                  </span>
                 </div>
                 <div className="flex flex-col text-left">
                   <span className="text-xs font-bold text-orange-400 uppercase tracking-wider mb-0.5 drop-shadow-md">INOVASI AKTIF</span>
