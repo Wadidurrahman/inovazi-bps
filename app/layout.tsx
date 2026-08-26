@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "INOVAZI - BPS Kota Probolinggo",
-  description: "Sistem Informasi Inovasi BPS Kota Probolinggo",
+  description: "Inovasi Pembangunan Zona Integritas BPS Kota Probolinggo",
   icons: {
     icon: "/favicon.ico", 
   },

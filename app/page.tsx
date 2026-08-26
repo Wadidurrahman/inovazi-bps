@@ -108,31 +108,31 @@ function MainContent() {
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
             </div>
 
-            <div className="relative z-10 w-full max-w-3xl mx-auto px-6 text-center flex flex-col items-center">
-              <div className="mb-4 inline-block drop-shadow-md">
-                <span className="px-4 py-1.5 rounded-full bg-white/20 border border-white/30 text-orange-400 text-[10px] sm:text-xs font-black uppercase tracking-widest backdrop-blur-md shadow-lg">
-                  SISTEM INFORMASI INOVAZI
+            <div className="relative z-10 w-full max-w-4xl mx-auto px-6 text-center flex flex-col items-center">
+              <div className="mb-3 inline-block drop-shadow-md overflow-hidden max-w-full">
+                <span className="px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-orange-400 text-[10px] sm:text-xs font-black uppercase tracking-widest backdrop-blur-md shadow-lg whitespace-nowrap block truncate">
+                  INOVASI PEMBANGUNAN ZONA INTEGRITAS
                 </span>
               </div>
               
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-4 leading-tight drop-shadow-lg">
-                BPS Kota <br className="sm:hidden" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300 drop-shadow-lg">
-                  Probolinggo
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter mb-4 leading-none drop-shadow-xl">
+                Badan Pusat Statistik <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-300 to-amber-300 drop-shadow-lg">
+                  Kota Probolinggo
                 </span>
               </h1>
               
-              <p className="text-white text-sm sm:text-base max-w-xl mx-auto mb-8 font-medium leading-snug drop-shadow-md">
-                Direktori pusat informasi inovasi pelayanan publik. Silakan eksplorasi ragam program unggulan melalui navigasi <strong className="text-orange-400 font-bold">Eksplorasi Menu</strong> di sudut kanan atas layar Anda.
+              <p className="text-slate-100 text-sm sm:text-base md:text-lg max-w-3xl mx-auto mb-4 font-medium leading-snug drop-shadow-md">
+                Informasi berbagai Inovasi Pembangunan Zona Integritas BPS Kota Probolinggo. Silakan eksplorasi ragam inovasi melalui navigasi <strong className="text-orange-400 font-bold">Eksplorasi Menu</strong> di sudut kanan atas
               </p>
 
-              <div className="inline-flex items-center bg-white/20 backdrop-blur-xl border border-white/30 px-6 py-3 rounded-2xl shadow-xl">
-                <div className="flex flex-col text-right border-r border-white/30 pr-4 mr-4">
-                  <span className="text-3xl sm:text-4xl font-black text-white leading-none drop-shadow-md">{inovasiList.length}</span>
+              <div className="inline-flex items-center bg-slate-900/60 backdrop-blur-xl border border-white/20 px-6 py-3.5 rounded-2xl shadow-2xl">
+                <div className="flex flex-col text-right border-r border-white/20 pr-4 mr-4">
+                  <span className="text-4xl sm:text-5xl font-black text-white leading-none drop-shadow-lg">{inovasiList.length}</span>
                 </div>
                 <div className="flex flex-col text-left">
-                  <span className="text-xs font-bold text-orange-400 uppercase tracking-wider mb-0.5 drop-shadow-md">INOVASI AKTIF</span>
-                  <span className="text-[10px] font-bold text-slate-100 uppercase tracking-widest drop-shadow-md">TELAH TERDAFTAR</span>
+                  <span className="text-sm font-bold text-orange-400 uppercase tracking-widest mb-0.5 drop-shadow-md">INOVASI AKTIF</span>
+                  <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">TELAH TERDAFTAR</span>
                 </div>
               </div>
             </div>
