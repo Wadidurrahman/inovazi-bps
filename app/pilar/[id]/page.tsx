@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/utils/supabase';
-import { Loader2, ArrowLeft, Building2 } from 'lucide-react';
+import { Loader2, ArrowLeft, Building2, Search } from 'lucide-react';
 
 export default function PilarDetail() {
   const params = useParams();
@@ -13,6 +13,7 @@ export default function PilarDetail() {
 
   const [inovasiList, setInovasiList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -21,7 +22,7 @@ export default function PilarDetail() {
         const { data } = await supabase
           .from('inovasi')
           .select('*')
-          .ilike('pilar', pilarName);
+          .ilike('pilar', `%${pilarName}%`);
             
         if (data) setInovasiList(data);
       } catch (error) {
@@ -36,64 +37,75 @@ export default function PilarDetail() {
     }
   }, [pilarName]);
 
+  const filteredList = inovasiList.filter(item =>
+    item.nama_inovasi?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="min-h-screen w-full bg-slate-50 text-slate-800 flex flex-col font-sans select-none overflow-x-hidden">
-      
-      {/* Header Sederhana */}
-      <header className="sticky top-0 z-10 w-full bg-white border-b border-slate-200 px-6 py-4 flex items-center shadow-sm">
+    <div className="min-h-screen w-full bg-slate-100/50 text-slate-800 flex flex-col font-sans select-none overflow-x-hidden relative">
+      <div className="absolute top-4 left-4 z-30">
         <Link 
           href="/"
-          className="inline-flex items-center gap-2 text-slate-500 hover:text-orange-500 text-sm font-bold transition-colors"
+          className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 shadow-sm px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 border border-slate-200 hover:scale-105"
         >
-          <ArrowLeft className="w-4 h-4" /> Kembali ke Beranda
+          <ArrowLeft className="w-4 h-4 text-orange-500" /> Kembali
         </Link>
-      </header>
+      </div>
 
-      {/* Konten Utama */}
-      <main className="flex-1 w-full max-w-6xl mx-auto px-6 py-12 flex flex-col items-center">
-        
-        {/* Judul Pilar */}
-        <div className="text-center mb-10 w-full">
-          <span className="inline-block px-3 py-1 bg-orange-100 text-orange-600 text-[10px] font-extrabold uppercase tracking-widest rounded-md mb-3">
-            Kategori Pilar
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-6 flex flex-col items-center">
+        <div className="text-center mb-6 mt-2 w-full max-w-xl relative z-10">
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight mb-4 drop-shadow-sm">
             {pilarName}
           </h1>
+
+          {inovasiList.length > 3 && (
+            <div className="relative w-full">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input 
+                type="text" 
+                placeholder="Cari inovasi dalam pilar ini..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white border border-slate-200 text-slate-800 text-xs font-medium rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all shadow-sm"
+              />
+            </div>
+          )}
         </div>
 
-        {/* Status Loading atau Daftar Logo */}
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+          <div className="flex flex-col items-center justify-center py-16 text-slate-400">
             <Loader2 className="w-8 h-8 animate-spin mb-3 text-orange-500" />
             <p className="text-sm font-medium">Memuat data inovasi...</p>
           </div>
-        ) : inovasiList.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 w-full">
-            {inovasiList.map((item) => (
+        ) : filteredList.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5 w-full">
+            {filteredList.map((item) => (
               <div 
                 key={item.id}
                 onClick={() => router.push(`/?detail=${item.id}`)}
-                className="group flex flex-col items-center p-4 bg-white border border-slate-200 rounded-2xl cursor-pointer hover:border-orange-500 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                className="group flex flex-col bg-white border border-slate-200 rounded-xl cursor-pointer hover:shadow-lg hover:shadow-orange-500/10 hover:border-orange-400 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
               >
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center p-2 mb-4 overflow-hidden group-hover:bg-orange-50/50 transition-colors">
+                <div className="w-full h-28 sm:h-32 flex items-center justify-center p-4 relative bg-white shrink-0">
                   {item.logo ? (
-                    <img src={item.logo} alt={item.nama_inovasi} className="w-full h-full object-contain drop-shadow-sm group-hover:scale-105 transition-transform" />
+                    <img src={item.logo} alt={item.nama_inovasi} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 ease-out" />
                   ) : (
-                    <Building2 className="w-8 h-8 text-slate-300" />
+                    <Building2 className="w-10 h-10 text-slate-200" />
                   )}
                 </div>
-                <h3 className="text-xs sm:text-sm font-bold text-slate-700 text-center line-clamp-2 group-hover:text-orange-500 transition-colors">
-                  {item.nama_inovasi}
-                </h3>
+                
+                <div className="w-full p-3 bg-slate-50 border-t border-slate-100 flex flex-col items-center justify-start h-[72px] sm:h-[84px]">
+                  <h3 className="text-[11px] sm:text-xs font-bold text-slate-700 text-center leading-snug line-clamp-3 group-hover:text-orange-600 transition-colors w-full">
+                    {item.nama_inovasi}
+                  </h3>
+                </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 w-full max-w-md bg-white border border-slate-200 border-dashed rounded-2xl mt-4">
-            <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-700 mb-1">Data Kosong</h3>
-            <p className="text-sm text-slate-500">Belum ada inovasi yang terdaftar di pilar ini.</p>
+          <div className="text-center py-12 w-full max-w-sm bg-white border border-slate-200 border-dashed rounded-2xl mt-2 shadow-sm">
+            <Building2 className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+            <h3 className="text-sm font-bold text-slate-700 mb-1">Tidak Ditemukan</h3>
+            <p className="text-xs text-slate-500">Tidak ada inovasi yang sesuai dengan pencarian Anda.</p>
           </div>
         )}
       </main>
