@@ -42,24 +42,25 @@ export default function AkhlakDetail() {
   );
 
   return (
-    <div className="min-h-screen w-full bg-slate-100/50 text-slate-800 flex flex-col font-sans select-none overflow-x-hidden relative">
+    <div className="min-h-screen w-full bg-slate-50 text-slate-800 flex flex-col font-sans select-none overflow-x-hidden relative">
       <div className="absolute top-4 left-4 z-30">
         <Link 
           href="/"
-          className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 shadow-sm px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 border border-slate-200 hover:scale-105"
+          className="inline-flex items-center gap-2 bg-white hover:bg-slate-100 text-slate-700 shadow-sm px-4 py-2.5 rounded-lg text-xs font-bold transition-all duration-200 border border-slate-200 hover:scale-105"
         >
           <ArrowLeft className="w-4 h-4 text-[#0B5E90]" /> Kembali
         </Link>
       </div>
 
       <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-6 flex flex-col items-center">
-        <div className="text-center mb-6 mt-2 w-full max-w-xl relative z-10">
-          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight mb-4 drop-shadow-sm">
+        <div className="text-center mb-6 mt-12 w-full max-w-4xl relative z-10">
+          <span className="text-[10px] font-extrabold text-[#0B5E90] uppercase tracking-widest mb-2 block">Nilai BerAKHLAK</span>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-tight mb-5 drop-shadow-sm break-words">
             {akhlakName}
           </h1>
 
           {inovasiList.length > 3 && (
-            <div className="relative w-full">
+            <div className="relative w-full max-w-lg mx-auto">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input 
                 type="text" 
@@ -73,17 +74,17 @@ export default function AkhlakDetail() {
         </div>
 
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+          <div className="flex flex-col items-center justify-center py-12 text-slate-400">
             <Loader2 className="w-8 h-8 animate-spin mb-3 text-[#0B5E90]" />
             <p className="text-sm font-medium">Memuat data inovasi...</p>
           </div>
         ) : filteredList.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5 w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 w-full items-stretch">
             {filteredList.map((item) => (
               <div 
                 key={item.id}
                 onClick={() => router.push(`/?detail=${item.id}`)}
-                className="group flex flex-col bg-white border border-slate-200 rounded-xl cursor-pointer hover:shadow-lg hover:shadow-[#0B5E90]/10 hover:border-[#0B5E90] transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+                className="group flex flex-col h-full bg-white border border-slate-200 rounded-xl cursor-pointer hover:shadow-lg hover:shadow-[#0B5E90]/10 hover:border-[#0B5E90] transition-all duration-300 hover:-translate-y-1 overflow-hidden"
               >
                 <div className="w-full h-28 sm:h-32 flex items-center justify-center p-4 relative bg-white shrink-0">
                   {item.logo ? (
@@ -93,8 +94,8 @@ export default function AkhlakDetail() {
                   )}
                 </div>
                 
-                <div className="w-full p-3 bg-slate-50 border-t border-slate-100 flex flex-col items-center justify-start h-[72px] sm:h-[84px]">
-                  <h3 className="text-[11px] sm:text-xs font-bold text-slate-700 text-center leading-snug line-clamp-3 group-hover:text-[#0B5E90] transition-colors w-full">
+                <div className="w-full p-3.5 bg-slate-50 border-t border-slate-100 flex flex-col items-center justify-start flex-1">
+                  <h3 className="text-[11px] sm:text-xs font-bold text-slate-700 text-center leading-relaxed group-hover:text-[#0B5E90] transition-colors w-full break-words">
                     {item.nama_inovasi}
                   </h3>
                 </div>

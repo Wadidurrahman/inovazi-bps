@@ -78,14 +78,14 @@ export default function PilarDetail() {
             <p className="text-sm font-medium">Memuat data inovasi...</p>
           </div>
         ) : filteredList.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5 w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5 w-full items-stretch">
             {filteredList.map((item) => (
               <div 
                 key={item.id}
                 onClick={() => router.push(`/?detail=${item.id}`)}
-                className="group flex flex-col bg-white border border-slate-200 rounded-xl cursor-pointer hover:shadow-lg hover:shadow-orange-500/10 hover:border-orange-400 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+                className="group flex flex-col h-full bg-white border border-slate-200 rounded-xl cursor-pointer hover:shadow-lg hover:shadow-orange-500/10 hover:border-orange-400 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
               >
-                <div className="w-full h-28 sm:h-32 flex items-center justify-center p-4 relative bg-white shrink-0">
+                <div className="w-full h-28 sm:h-32 flex items-center justify-center p-3 relative bg-white shrink-0">
                   {item.logo ? (
                     <img src={item.logo} alt={item.nama_inovasi} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 ease-out" />
                   ) : (
@@ -93,8 +93,8 @@ export default function PilarDetail() {
                   )}
                 </div>
                 
-                <div className="w-full p-3 bg-slate-50 border-t border-slate-100 flex flex-col items-center justify-start h-[72px] sm:h-[84px]">
-                  <h3 className="text-[11px] sm:text-xs font-bold text-slate-700 text-center leading-snug line-clamp-3 group-hover:text-orange-600 transition-colors w-full">
+                <div className="w-full p-3 bg-slate-50 border-t border-slate-100 flex flex-col items-center justify-start flex-1">
+                  <h3 className="text-[11px] sm:text-xs font-bold text-slate-700 text-center leading-snug group-hover:text-orange-600 transition-colors w-full">
                     {item.nama_inovasi}
                   </h3>
                 </div>

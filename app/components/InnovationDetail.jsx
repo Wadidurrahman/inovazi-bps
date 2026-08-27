@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
-import { ArrowLeft, BarChart3 } from 'lucide-react'
+import { ArrowLeft, ExternalLink } from 'lucide-react'
 
 export default function InnovationDetailTemplate({ data, onBack }) {
   const [scrollProgress, setScrollProgress] = useState(0)
@@ -53,7 +53,7 @@ export default function InnovationDetailTemplate({ data, onBack }) {
   if (!data) return null;
 
   return (
-    <div ref={containerRef} className="w-full h-full bg-slate-50 overflow-y-auto overflow-x-hidden scroll-smooth custom-scrollbar relative font-sans text-slate-800 flex flex-col items-center">
+    <div ref={containerRef} className="w-full h-full bg-slate-100 overflow-y-auto overflow-x-hidden scroll-smooth custom-scrollbar relative font-sans text-slate-800 flex flex-col items-center">
       <style dangerouslySetInnerHTML={{__html: `
         .scroll-reveal {
           opacity: 0;
@@ -66,142 +66,168 @@ export default function InnovationDetailTemplate({ data, onBack }) {
         }
       `}} />
 
-      <div className="sticky top-0 z-50 w-full h-1 bg-slate-200 shrink-0">
+      <div className="fixed top-0 left-0 z-[60] w-full h-1 bg-slate-200">
         <div 
           className="h-full bg-[#F26522] transition-all duration-150 ease-out"
           style={{ width: `${scrollProgress}%` }}
         ></div>
       </div>
 
-      <div className="relative w-full h-[20vh] min-h-[150px] shrink-0 bg-slate-900 overflow-hidden">
-        <img 
-          src={bannerImg} 
-          alt="Banner Inovasi" 
-          className="w-full h-full object-cover opacity-60"
+      <div className="relative w-full pt-16 pb-24 px-4 sm:px-8 lg:px-20 flex flex-col justify-end min-h-[35vh] shrink-0 bg-slate-900 overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-30" 
+          style={{ backgroundImage: `url(${bannerImg})` }} 
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-50 via-slate-900/10 to-slate-900/70" />
-      </div>
-
-      <div className="w-full max-w-6xl mx-auto px-4 sm:px-8 lg:px-20 pb-16 -mt-14 relative z-10 box-border">
-        <header className="scroll-reveal mb-6 bg-white p-6 sm:p-7 rounded-xl shadow-sm border border-slate-200/80">
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 bg-[#0B5E90] text-white rounded">
-              {data.pilar}
-            </span>
-            <span className="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 bg-orange-50 text-orange-600 rounded">
-              {data.nilai_berakhlak}
-            </span>
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-slate-900/20" />
+        
+        <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            {data.pilar && data.pilar.split(',').map((pilarItem, idx) => (
+              <span key={idx} className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 bg-[#0B5E90] text-white rounded shadow-sm">
+                {pilarItem.trim()}
+              </span>
+            ))}
+            {data.nilai_berakhlak && data.nilai_berakhlak.split('/').map((akhlakItem, idx) => (
+              <span key={idx} className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 bg-[#F26522] text-white rounded shadow-sm">
+                {akhlakItem.trim()}
+              </span>
+            ))}
           </div>
           
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight mb-2 leading-snug break-words">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight break-words drop-shadow-md">
             {data.nama_inovasi}
           </h1>
           
-          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-            Timeline: {data.timeline}
+          <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2 mt-1">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            Frekuensi Pelaksanaan: <span className="text-white">{data.timeline}</span>
           </p>
-        </header>
+        </div>
+      </div>
 
-        <div className="flex flex-col lg:flex-row items-start gap-6 lg:gap-8">
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 -mt-12 relative z-20">
+        <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-5 sm:p-8 flex flex-col lg:flex-row gap-8 lg:gap-12">
+          
           <div className="w-full lg:w-[68%] min-w-0 flex flex-col gap-6">
-            <div className="scroll-reveal w-full aspect-video rounded-xl overflow-hidden shadow-sm border border-slate-200 bg-slate-100">
-              <img 
-                src={bannerImg} 
-                alt={data.nama_inovasi} 
-                className="w-full h-full object-cover"
-              />
+            
+            <div className="flex flex-col gap-3">
+              <div className="scroll-reveal relative w-full aspect-video rounded-xl overflow-hidden bg-slate-900 border border-slate-200 shadow-sm">
+                <div 
+                  className="absolute inset-0 bg-cover bg-center blur-xl opacity-50 scale-110" 
+                  style={{ backgroundImage: `url(${bannerImg})` }} 
+                />
+                <img 
+                  src={bannerImg} 
+                  alt={data.nama_inovasi} 
+                  className="relative z-10 w-full h-full object-contain drop-shadow-lg"
+                />
+              </div>
+
+              {data.link_publik && (
+                <div className="scroll-reveal px-1">
+                  <a 
+                    href={data.link_publik} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#0B5E90] hover:text-[#F26522] transition-colors group"
+                  >
+                    <ExternalLink className="w-4 h-4 shrink-0" />
+                    <span className="group-hover:underline underline-offset-4 break-all">Link: {data.link_publik}</span>
+                  </a>
+                </div>
+              )}
             </div>
 
-            <article className="space-y-6 text-xs sm:text-sm text-slate-700 leading-relaxed bg-white p-6 sm:p-7 rounded-xl shadow-sm border border-slate-200/80">
+            <div className="space-y-6 text-sm text-slate-700 leading-relaxed">
               <section className="scroll-reveal">
-                <h2 className="text-sm font-bold text-slate-900 mb-1.5 uppercase tracking-wide">Latar Belakang & Deskripsi</h2>
-                <p className="break-words font-medium text-slate-600">{data.deskripsi}</p>
+                <h2 className="text-sm font-extrabold text-[#0B5E90] mb-1.5 uppercase tracking-wide border-b border-slate-100 pb-2">Latar Belakang & Deskripsi</h2>
+                <p className="break-words font-medium text-slate-600 whitespace-pre-wrap">{data.deskripsi}</p>
               </section>
 
-              <section className="scroll-reveal pt-4 border-t border-slate-100">
-                <h2 className="text-sm font-bold text-slate-900 mb-1.5 uppercase tracking-wide">Tujuan Inovasi</h2>
-                <p className="break-words font-medium text-slate-600">{data.tujuan}</p>
+              <section className="scroll-reveal">
+                <h2 className="text-sm font-extrabold text-[#0B5E90] mb-1.5 uppercase tracking-wide border-b border-slate-100 pb-2">Tujuan Inovasi</h2>
+                <p className="break-words font-medium text-slate-600 whitespace-pre-wrap">{data.tujuan}</p>
               </section>
 
-              <section className="scroll-reveal pt-4 border-t border-slate-100">
-                <h2 className="text-sm font-bold text-slate-900 mb-2.5 uppercase tracking-wide">Indikator Hasil</h2>
-                <div className="space-y-3">
-                  <div>
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Output (Keluaran)</h3>
-                    <p className="font-medium text-slate-700 break-words">{data.output}</p>
+              <section className="scroll-reveal">
+                <h2 className="text-sm font-extrabold text-[#0B5E90] mb-3 uppercase tracking-wide border-b border-slate-100 pb-2">Indikator Hasil</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                    <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-[#F26522] mb-1">Output</h3>
+                    <p className="text-xs font-semibold text-slate-700 break-words whitespace-pre-wrap">{data.output}</p>
                   </div>
-                  <div>
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Outcome (Hasil Akhir)</h3>
-                    <p className="font-medium text-slate-700 break-words">{data.outcome}</p>
+                  <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                    <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-[#F26522] mb-1">Outcome</h3>
+                    <p className="text-xs font-semibold text-slate-700 break-words whitespace-pre-wrap">{data.outcome}</p>
                   </div>
-                  <div>
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Ukuran Keberhasilan</h3>
-                    <p className="font-medium text-slate-700 break-words">{data.ukuran_keberhasilan}</p>
+                  <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+                    <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-[#F26522] mb-1">Keberhasilan</h3>
+                    <p className="text-xs font-semibold text-slate-700 break-words whitespace-pre-wrap">{data.ukuran_keberhasilan}</p>
                   </div>
                 </div>
               </section>
 
-              <section className="scroll-reveal pt-4 border-t border-slate-100">
-                <h2 className="text-sm font-bold text-slate-900 mb-2.5 uppercase tracking-wide">Transformasi Kondisi</h2>
-                <div className="space-y-3">
-                  <div className="pl-3 border-l-2 border-slate-300">
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Kondisi Sebelumnya</h3>
-                    <p className="font-medium text-slate-600 break-words">{data.kondisi_sebelum}</p>
+              <section className="scroll-reveal">
+                <h2 className="text-sm font-extrabold text-[#0B5E90] mb-3 uppercase tracking-wide border-b border-slate-100 pb-2">Transformasi Kondisi</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-4 border-l-2 border-slate-300 bg-slate-50 rounded-r-xl">
+                    <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500 mb-1.5">Kondisi Sebelumnya</h3>
+                    <p className="text-xs font-semibold text-slate-600 break-words whitespace-pre-wrap">{data.kondisi_sebelum}</p>
                   </div>
-                  <div className="pl-3 border-l-2 border-[#0B5E90]">
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#0B5E90] mb-0.5">Kondisi Saat Ini</h3>
-                    <p className="font-medium text-slate-900 break-words">{data.kondisi_sesudah}</p>
+                  <div className="p-4 border-l-2 border-[#0B5E90] bg-[#0B5E90]/5 rounded-r-xl">
+                    <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-[#0B5E90] mb-1.5">Kondisi Saat Ini</h3>
+                    <p className="text-xs font-semibold text-slate-800 break-words whitespace-pre-wrap">{data.kondisi_sesudah}</p>
                   </div>
                 </div>
               </section>
 
-              <section className="scroll-reveal pt-4 border-t border-slate-100">
-                <h2 className="text-sm font-bold text-slate-900 mb-1.5 uppercase tracking-wide">Dampak</h2>
-                <p className="italic text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-100 break-words">{data.dampak}</p>
+              <section className="scroll-reveal">
+                <h2 className="text-sm font-extrabold text-[#0B5E90] mb-2 uppercase tracking-wide border-b border-slate-100 pb-2">Dampak Inovasi</h2>
+                <p className="font-semibold text-slate-700 bg-slate-50 p-4 rounded-xl border border-slate-100 break-words whitespace-pre-wrap leading-relaxed">{data.dampak}</p>
               </section>
 
               {data.grafik && (
-                <section className="scroll-reveal pt-4 border-t border-slate-100">
-                  <h2 className="text-sm font-bold text-slate-900 mb-2.5 uppercase tracking-wide flex items-center gap-2">
-                    <BarChart3 className="w-4 h-4 text-[#F26522]" /> Grafik Kinerja Inovasi
-                  </h2>
-                  <div className="w-full bg-slate-50 p-3 rounded-lg border border-slate-200 flex justify-center">
+                <section className="scroll-reveal pt-2">
+                  <div className="w-full bg-slate-900 rounded-xl overflow-hidden border border-slate-200 flex justify-center relative">
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center blur-xl opacity-40 scale-110" 
+                      style={{ backgroundImage: `url(${data.grafik})` }} 
+                    />
                     <img 
                       src={data.grafik} 
                       alt="Grafik Kinerja" 
-                      className="w-full max-h-[350px] object-contain rounded"
+                      className="relative z-10 w-full max-h-[450px] object-contain drop-shadow-md"
                     />
                   </div>
                 </section>
               )}
-            </article>
+            </div>
 
-            <div className="pt-2 flex justify-start scroll-reveal">
+            <div className="pt-6 flex justify-start scroll-reveal">
               <button
                 onClick={onBack}
-                className="group bg-white hover:bg-[#F26522] text-[#F26522] hover:text-white border border-[#F26522] font-bold py-2.5 px-6 rounded-lg inline-flex items-center gap-2 transition-all duration-200 shadow-xs text-xs uppercase tracking-wider"
+                className="group bg-white hover:bg-[#0B5E90] text-[#0B5E90] hover:text-white border border-[#0B5E90] font-bold py-2.5 px-6 rounded-xl inline-flex items-center gap-2 transition-all duration-200 shadow-sm text-xs uppercase tracking-wider"
               >
                 <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />
-                Kembali ke Menu
+                Kembali ke Menu Utama
               </button>
             </div>
           </div>
 
           <div className="w-full lg:w-[32%] shrink-0">
-            <div className="sticky top-6 scroll-reveal space-y-4">
+            <div className="sticky top-6 scroll-reveal space-y-6">
+              
               {data.logo && (
-                <div className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-sm">
-                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2.5">Logo Inovasi</h3>
-                  <div className="w-full aspect-square max-h-44 rounded-lg overflow-hidden border border-slate-100 bg-slate-50 flex items-center justify-center p-3">
-                    <img src={data.logo} alt={data.nama_inovasi} className="w-full h-full object-contain" />
-                  </div>
+                <div className="flex flex-col items-center pb-4 border-b border-slate-100">
+                  <h3 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3 w-full text-left">Logo Inovasi</h3>
+                  <img src={data.logo} alt={data.nama_inovasi} className="w-full max-w-[220px] max-h-[220px] object-contain drop-shadow-sm" />
                 </div>
               )}
 
               {detailSliderImages.length > 0 && (
-                <div className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-sm">
-                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2.5">Dokumentasi Kegiatan</h3>
-                  <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden border border-slate-100 bg-slate-900">
+                <div>
+                  <h3 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3">Dokumentasi Kegiatan</h3>
+                  <div className="relative w-full aspect-square sm:aspect-[4/3] rounded-xl overflow-hidden border border-slate-200 bg-slate-900 shadow-sm">
                     {detailSliderImages.map((imgUrl, idx) => (
                       <div
                         key={idx}
@@ -209,16 +235,20 @@ export default function InnovationDetailTemplate({ data, onBack }) {
                           idx === currentDetailSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'
                         }`}
                       >
-                        <img src={imgUrl} alt={`Dokumentasi ${idx + 1}`} className="w-full h-full object-cover" />
+                        <div 
+                          className="absolute inset-0 bg-cover bg-center blur-xl opacity-50 scale-110" 
+                          style={{ backgroundImage: `url(${imgUrl})` }} 
+                        />
+                        <img src={imgUrl} alt={`Dokumentasi ${idx + 1}`} className="relative z-10 w-full h-full object-contain drop-shadow-md" />
                       </div>
                     ))}
-                    <div className="absolute bottom-2.5 left-0 w-full flex justify-center gap-1.5 z-10 px-2">
+                    <div className="absolute bottom-3 left-0 w-full flex justify-center gap-1.5 z-10 px-2 bg-gradient-to-t from-slate-900/60 to-transparent pt-6 pb-1">
                       {detailSliderImages.map((_, idx) => (
                         <button
                           key={idx}
                           onClick={() => setCurrentDetailSlide(idx)}
-                          className={`h-1.5 rounded-full transition-all duration-300 ${
-                            idx === currentDetailSlide ? 'w-4 bg-[#F26522]' : 'w-1.5 bg-white/60 hover:bg-white'
+                          className={`h-1.5 rounded-full transition-all duration-300 shadow-sm ${
+                            idx === currentDetailSlide ? 'w-5 bg-[#F26522]' : 'w-1.5 bg-white/60 hover:bg-white'
                           }`}
                           aria-label={`Slide ${idx + 1}`}
                         />
@@ -228,19 +258,19 @@ export default function InnovationDetailTemplate({ data, onBack }) {
                 </div>
               )}
 
-              <div className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-sm">
-                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2.5">
-                  Status Arsip
-                </h3>
-                <div className="flex items-center justify-between py-1">
-                  <span className="text-xs font-semibold text-slate-600">Arsip Media Drive</span>
-                  <span className={`text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded ${data.dokumentasi ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-slate-100 text-slate-500'}`}>
+              <div>
+                <h3 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2">Status Arsip</h3>
+                <div className="flex items-center justify-between py-2 px-3 bg-slate-50 rounded-lg border border-slate-200">
+                  <span className="text-xs font-bold text-slate-600">Arsip Fisik & Drive</span>
+                  <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded shadow-sm ${data.dokumentasi ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500'}`}>
                     {data.dokumentasi ? 'Tersedia' : 'Kosong'}
                   </span>
                 </div>
               </div>
+
             </div>
           </div>
+          
         </div>
       </div>
     </div>

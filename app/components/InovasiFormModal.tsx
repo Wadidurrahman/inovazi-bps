@@ -28,7 +28,7 @@ export default function InovasiFormModal({ isOpen, onClose, mode, initialData, o
 
   const pilarOptions = ['Pilar 1', 'Pilar 2', 'Pilar 3', 'Pilar 4', 'Pilar 5', 'Pilar 6']
   const akhlakOptions = ['Berorientasi Pelayanan', 'Akuntabel', 'Kompeten', 'Harmonis', 'Loyal', 'Adaptif', 'Kolaboratif']
-  const timelineOptions = ['Perhari', 'Perminggu', 'Perbulan', 'Pertahun']
+  const timelineOptions = ['Harian', 'Mingguan', 'Bulanan', 'Tahunan']
 
   useEffect(() => {
     if (isOpen) {
@@ -182,7 +182,7 @@ export default function InovasiFormModal({ isOpen, onClose, mode, initialData, o
                 <div>
                   <label className="block text-[11px] font-semibold text-slate-600 mb-1">Timeline / Frekuensi</label>
                   <select name="timeline" value={formData.timeline || ''} onChange={handleChange} required className="w-full bg-white border border-slate-200 rounded px-3 py-2.5 text-xs focus:border-[#0B5E90] outline-none text-slate-800 transition-colors appearance-none cursor-pointer">
-                    <option value="" disabled>Pilih Frekuensi</option>
+                    <option value="" disabled>Pilih Priode</option>
                     {timelineOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
                 </div>
