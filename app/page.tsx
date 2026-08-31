@@ -74,16 +74,13 @@ function MainContent() {
         />
       </div>
 
-      <div className="w-full bg-[#0B5E90]/90 backdrop-blur-md border-b border-orange-500/30 overflow-hidden py-2 px-4 shadow-inner relative z-30">
-        <div className="max-w-7xl mx-auto flex items-center overflow-hidden">
-          <div className="bg-orange-500 text-white text-[10px] sm:text-xs font-extrabold px-2.5 py-0.5 rounded uppercase tracking-wider shrink-0 mr-3 shadow-sm z-10">
-            Info ZI
-          </div>
+      <div className="w-full bg-[#D9531E] border-b border-[#B84214] overflow-hidden py-2 px-0 shadow-md relative z-30">
+        <div className="w-full flex items-center overflow-hidden">
           <div className="overflow-hidden relative w-full flex items-center">
-            <div className="animate-marquee text-white text-xs sm:text-sm font-medium tracking-wide flex items-center gap-8">
-              <span>Selamat Datang di Portal Inovasi Pembangunan Zona Integritas (ZI) BPS Kota Probolinggo</span>
-              <span>Komitmen Kuat Mewujudkan Wilayah Bebas dari Korupsi (WBK) & Wilayah Birokrasi Bersih dan Melayani (WBBM)</span>
-              <span>Pelayanan Statistik Berkualitas, Cepat, Mudah, dan Transparan</span>
+            <div className="animate-marquee text-white text-xs sm:text-sm font-bold tracking-wide flex items-center gap-16">
+              <span>🔥 INFO ZI: Selamat Datang di Portal Inovasi Pembangunan Zona Integritas (ZI) BPS Kota Probolinggo</span>
+              <span>🛡️ Komitmen Kuat Mewujudkan Wilayah Bebas dari Korupsi (WBK) & Wilayah Birokrasi Bersih dan Melayani (WBBM)</span>
+              <span>📊 Pelayanan Statistik Berkualitas, Cepat, Mudah, dan Transparan untuk Seluruh Pengguna Data</span>
             </div>
           </div>
         </div>
