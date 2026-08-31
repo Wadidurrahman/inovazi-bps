@@ -74,6 +74,21 @@ function MainContent() {
         />
       </div>
 
+      <div className="w-full bg-[#0B5E90]/90 backdrop-blur-md border-b border-orange-500/30 overflow-hidden py-2 px-4 shadow-inner relative z-30">
+        <div className="max-w-7xl mx-auto flex items-center overflow-hidden">
+          <div className="bg-orange-500 text-white text-[10px] sm:text-xs font-extrabold px-2.5 py-0.5 rounded uppercase tracking-wider shrink-0 mr-3 shadow-sm z-10">
+            Info ZI
+          </div>
+          <div className="overflow-hidden relative w-full flex items-center">
+            <div className="animate-marquee text-white text-xs sm:text-sm font-medium tracking-wide flex items-center gap-8">
+              <span>Selamat Datang di Portal Inovasi Pembangunan Zona Integritas (ZI) BPS Kota Probolinggo</span>
+              <span>Komitmen Kuat Mewujudkan Wilayah Bebas dari Korupsi (WBK) & Wilayah Birokrasi Bersih dan Melayani (WBBM)</span>
+              <span>Pelayanan Statistik Berkualitas, Cepat, Mudah, dan Transparan</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <main className="flex-1 relative overflow-hidden bg-slate-50">
         {detailId && activeDetail ? (
           <div className="absolute inset-0 w-full h-full overflow-y-auto custom-scrollbar animate-fadeIn bg-slate-50">
