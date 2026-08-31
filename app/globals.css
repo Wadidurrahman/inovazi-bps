@@ -40,3 +40,19 @@ body {
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 90s linear infinite; /* Diperlambat menjadi 90 detik agar sangat smooth dan terbaca */
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}

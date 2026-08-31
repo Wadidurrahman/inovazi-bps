@@ -74,14 +74,11 @@ function MainContent() {
         />
       </div>
 
-      <div className="w-full bg-[#D9531E] border-b border-[#B84214] overflow-hidden py-2 px-0 shadow-md relative z-30">
-        <div className="w-full flex items-center overflow-hidden">
-          <div className="overflow-hidden relative w-full flex items-center">
-            <div className="animate-marquee text-white text-xs sm:text-sm font-bold tracking-wide flex items-center gap-16">
-              <span>🔥 INFO ZI: Selamat Datang di Portal Inovasi Pembangunan Zona Integritas (ZI) BPS Kota Probolinggo</span>
-              <span>🛡️ Komitmen Kuat Mewujudkan Wilayah Bebas dari Korupsi (WBK) & Wilayah Birokrasi Bersih dan Melayani (WBBM)</span>
-              <span>📊 Pelayanan Statistik Berkualitas, Cepat, Mudah, dan Transparan untuk Seluruh Pengguna Data</span>
-            </div>
+      <div className="w-full bg-gradient-to-r from-[#b3471e] via-[#c75122] to-[#913310] border-b border-[#7a2a0c] overflow-hidden py-1.5 shadow-inner relative z-30">
+        <div className="w-full overflow-hidden whitespace-nowrap relative">
+          <div className="animate-marquee inline-block text-white text-xs sm:text-sm font-semibold tracking-wide">
+            <span className="drop-shadow-sm">Selamat Datang di Portal Inovasi Pembangunan Zona Integritas (ZI) Badan Pusat Statistik (BPS) Kota Probolinggo — Komitmen Bersama Seluruh Pegawai untuk Mewujudkan BPS sebagai Wilayah Bebas dari Korupsi (WBK) dan Wilayah Birokrasi Bersih dan Melayani (WBBM)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span className="drop-shadow-sm">Selamat Datang di Portal Inovasi Pembangunan Zona Integritas (ZI) Badan Pusat Statistik (BPS) Kota Probolinggo — Komitmen Bersama Seluruh Pegawai untuk Mewujudkan BPS sebagai Wilayah Bebas dari Korupsi (WBK) dan Wilayah Birokrasi Bersih dan Melayani (WBBM)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
           </div>
         </div>
       </div>
