@@ -28,7 +28,7 @@ export default function InovasiFormModal({ isOpen, onClose, mode, initialData, o
 
   const pilarOptions = ['Pilar 1', 'Pilar 2', 'Pilar 3', 'Pilar 4', 'Pilar 5', 'Pilar 6']
   const akhlakOptions = ['Berorientasi Pelayanan', 'Akuntabel', 'Kompeten', 'Harmonis', 'Loyal', 'Adaptif', 'Kolaboratif']
-  const timelineOptions = ['Harian', 'Mingguan', 'Bulanan', 'Tahunan']
+  const timelineOptions = ['Harian', 'Mingguan', 'Bulanan', 'Triwulanan', 'Tahunan']
 
   useEffect(() => {
     if (isOpen) {
@@ -120,8 +120,14 @@ export default function InovasiFormModal({ isOpen, onClose, mode, initialData, o
       const { id, link, ...dataWithoutId } = formData
       const dataToSave = { 
         ...dataWithoutId, 
-        gambar: finalBgUrl, logo: finalLogoUrl, foto_1: finalFoto1, 
-        foto_2: finalFoto2, foto_3: finalFoto3, grafik: finalGrafik
+        gambar: finalBgUrl, 
+        logo: finalLogoUrl, 
+        foto_1: finalFoto1, 
+        foto_2: finalFoto2, 
+        foto_3: finalFoto3, 
+        grafik: finalGrafik,
+        nilai_berakhlak: formData.nilai_berakhlak || '',
+        pilar: formData.pilar || ''
       }
 
       if (mode === 'add') {

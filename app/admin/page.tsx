@@ -34,19 +34,13 @@ export default function AdminLogin() {
   }
 
   return (
-    <main className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-[#0B5E90] to-slate-900 font-sans selection:bg-[#F26522] selection:text-white p-6 relative overflow-hidden">
+    <main className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-[#0B5E90] to-slate-900 font-sans selection:bg-[#F26522] selection:text-white p-4 overflow-y-auto">
       
-      {/* Background Decorative Glow */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl pointer-events-none"></div>
-
-      <div className="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 overflow-hidden relative z-10">
+      <div className="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 overflow-hidden relative z-10 my-auto">
         
-        <div className="bg-gradient-to-r from-[#0B5E90] to-[#084870] p-8 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none"></div>
-          
+        <div className="bg-gradient-to-r from-[#0B5E90] to-[#084870] p-6 text-center relative overflow-hidden">
           <div className="relative z-10 flex flex-col items-center">
-            <div className="h-14 w-14 bg-white rounded-xl flex items-center justify-center p-2.5 mb-4 shadow-lg border border-slate-100">
+            <div className="h-12 w-12 bg-white rounded-xl flex items-center justify-center p-2 mb-3 shadow-lg border border-slate-100">
               <img 
                 src={logoSrc} 
                 alt="Logo BPS" 
@@ -59,19 +53,19 @@ export default function AdminLogin() {
                   }
                 }} 
               />
-              {logoSrc === '' && <Building2 className="w-6 h-6 text-[#0B5E90]" />}
+              {logoSrc === '' && <Building2 className="w-5 h-5 text-[#0B5E90]" />}
             </div>
-            <h1 className="text-xl font-extrabold tracking-wide text-white flex items-center gap-2">
-              LOGIN INOVAZI <ShieldCheck className="w-5 h-5 text-[#F26522]" />
+            <h1 className="text-lg font-extrabold tracking-wide text-white flex items-center gap-2">
+              LOGIN INOVAZI <ShieldCheck className="w-4 h-4 text-[#F26522]" />
             </h1>
-            <p className="text-[11px] text-orange-300 font-bold uppercase tracking-widest mt-1">Halaman Admin Sistem Inovazi BPS Kota Probolinggo</p>
+            <p className="text-[10px] text-orange-300 font-bold uppercase tracking-widest mt-0.5">BPS Kota Probolinggo</p>
           </div>
         </div>
 
-        <div className="p-8">
-          <form onSubmit={handleLogin} className="space-y-5">
+        <div className="p-6">
+          <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
                 Alamat Email
               </label>
               <div className="relative">
@@ -80,7 +74,7 @@ export default function AdminLogin() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-50/80 border border-slate-200 rounded-lg pl-11 pr-4 py-3 text-sm text-slate-800 font-medium focus:outline-none focus:border-[#0B5E90] focus:bg-white focus:ring-2 focus:ring-[#0B5E90]/20 transition"
+                  className="w-full bg-slate-50/80 border border-slate-200 rounded-lg pl-11 pr-4 py-2.5 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B5E90] focus:bg-white focus:ring-2 focus:ring-[#0B5E90]/20 transition"
                   placeholder="admin@bps.go.id"
                   required
                 />
@@ -88,7 +82,7 @@ export default function AdminLogin() {
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
                 Kata Sandi
               </label>
               <div className="relative">
@@ -97,7 +91,7 @@ export default function AdminLogin() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-50/80 border border-slate-200 rounded-lg pl-11 pr-11 py-3 text-sm text-slate-800 font-medium focus:outline-none focus:border-[#0B5E90] focus:bg-white focus:ring-2 focus:ring-[#0B5E90]/20 transition"
+                  className="w-full bg-slate-50/80 border border-slate-200 rounded-lg pl-11 pr-11 py-2.5 text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0B5E90] focus:bg-white focus:ring-2 focus:ring-[#0B5E90]/20 transition"
                   placeholder="••••••••"
                   required
                 />
@@ -114,7 +108,7 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-[#0B5E90] to-[#084870] hover:from-[#084870] hover:to-[#063554] text-white font-bold py-3.5 rounded-lg transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 flex justify-center items-center gap-2 disabled:opacity-70 text-sm tracking-wide"
+              className="w-full bg-gradient-to-r from-[#0B5E90] to-[#084870] hover:from-[#084870] hover:to-[#063554] text-white font-bold py-3 rounded-lg transition-all shadow-md hover:shadow-lg flex justify-center items-center gap-2 disabled:opacity-70 text-xs tracking-wide"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
               {loading ? 'Memeriksa Autentikasi...' : 'Masuk ke Dashboard'}
@@ -122,12 +116,18 @@ export default function AdminLogin() {
           </form>
         </div>
 
-        <div className="bg-slate-50/80 backdrop-blur px-8 py-4 border-t border-slate-100 text-center">
-          <Link href="/" className="inline-flex items-center justify-center space-x-2 text-[11px] font-bold text-slate-500 hover:text-[#0B5E90] transition uppercase tracking-widest group">
-            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+        <div className="bg-slate-50/80 backdrop-blur px-6 py-3.5 border-t border-slate-100 flex flex-col items-center gap-2">
+          <Link href="/" className="inline-flex items-center justify-center space-x-1.5 text-[10px] font-bold text-slate-500 hover:text-[#0B5E90] transition uppercase tracking-widest group">
+            <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
             <span>Kembali ke Halaman Publik</span>
           </Link>
+
+          <div className="text-center text-[9px] text-slate-400 font-medium tracking-wide pt-1 border-t border-slate-200/60 w-full">
+            © 2026 Badan Pusat Statistik Kota Probolinggo <br />
+            Developed by <span className="text-slate-600 font-bold">Wadidurrahman</span>
+          </div>
         </div>
+
       </div>
     </main>
   )

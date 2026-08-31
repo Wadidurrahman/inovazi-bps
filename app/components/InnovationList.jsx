@@ -28,7 +28,7 @@ export default function InnovationList({ inovasiList, onSelectInovasi, initialId
 
             <div className="flex flex-wrap items-center gap-2 mb-5">
                <span className="bg-white text-[#0B5E90] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded shadow-sm">
-                 {currentItem.pilar || 'PILAR UMUM'}
+                 {currentItem.pilar || 'PILAR 1'}
                </span>
                <span className="bg-white text-[#F26522] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded shadow-sm">
                  {currentItem.nilai_berakhlak || 'KATEGORI'}
