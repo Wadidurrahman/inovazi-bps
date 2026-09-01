@@ -10,6 +10,10 @@ export default function InnovationList({ inovasiList, onSelectInovasi, initialId
 
   const displayImage = currentItem.gambar || currentItem.foto_1 || currentItem.logo || '/bg-1.webp';
 
+  // Pecah string teks panjang menjadi array agar bisa dirender sebagai badge terpisah
+  const pilarArray = currentItem.pilar ? currentItem.pilar.split(',').map(p => p.trim()) : ['PILAR 1'];
+  const akhlakArray = currentItem.nilai_berakhlak ? currentItem.nilai_berakhlak.split('/').map(a => a.trim()) : ['KATEGORI'];
+
   return (
     <div className="w-full h-full min-h-[calc(100vh-72px)] flex items-center justify-center relative bg-[#021526] overflow-hidden py-10">
       
@@ -26,13 +30,18 @@ export default function InnovationList({ inovasiList, onSelectInovasi, initialId
                Data Inovasi Terpilih
             </div>
 
+            {/* Area Badge yang sudah otomatis memecah banyak pilar & akhlak */}
             <div className="flex flex-wrap items-center gap-2 mb-5">
-               <span className="bg-white text-[#0B5E90] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded shadow-sm">
-                 {currentItem.pilar || 'PILAR 1'}
-               </span>
-               <span className="bg-white text-[#F26522] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded shadow-sm">
-                 {currentItem.nilai_berakhlak || 'KATEGORI'}
-               </span>
+               {pilarArray.map((pilar, idx) => (
+                 <span key={`pilar-${idx}`} className="bg-white text-[#0B5E90] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded shadow-sm">
+                   {pilar}
+                 </span>
+               ))}
+               {akhlakArray.map((akhlak, idx) => (
+                 <span key={`akhlak-${idx}`} className="bg-white text-[#F26522] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded shadow-sm">
+                   {akhlak}
+                 </span>
+               ))}
             </div>
 
             <div className="flex flex-col justify-start mb-6">
@@ -58,7 +67,7 @@ export default function InnovationList({ inovasiList, onSelectInovasi, initialId
          <div className="w-full lg:w-[50%] flex justify-center lg:justify-end animate-fadeInRight">
             <div className="relative w-full max-w-[560px] aspect-[4/3] sm:aspect-[16/10] bg-slate-900/50 rounded-[20px] p-2 shadow-2xl border border-white/10 backdrop-blur-sm">
                <div className="relative w-full h-full rounded-[14px] overflow-hidden bg-slate-800 shadow-inner">
-                  
+                 
                   <div 
                     className="absolute inset-0 bg-cover bg-center blur-xl opacity-40 scale-110" 
                     style={{ backgroundImage: `url(${displayImage})` }} 

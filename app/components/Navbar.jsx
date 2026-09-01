@@ -15,7 +15,7 @@ export default function NavbarTemplate({ onBack, inovasiList, activeInovasiId, o
 
   const displayList = inovasiList && inovasiList.length > 0 ? inovasiList : [];
 
-  const pilarList = Array.from(new Set(displayList.map(item => item.pilar).filter(Boolean))).sort();
+  const pilarList = ['Pilar 1', 'Pilar 2', 'Pilar 3', 'Pilar 4', 'Pilar 5', 'Pilar 6'];
   const akhlakList = Array.from(new Set(displayList.map(item => item.nilai_berakhlak).filter(Boolean))).sort();
 
   const filteredInovasi = displayList.filter(item => 
