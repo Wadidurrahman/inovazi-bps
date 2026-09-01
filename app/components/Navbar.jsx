@@ -16,7 +16,7 @@ export default function NavbarTemplate({ onBack, inovasiList, activeInovasiId, o
   const displayList = inovasiList && inovasiList.length > 0 ? inovasiList : [];
 
   const pilarList = ['Pilar 1', 'Pilar 2', 'Pilar 3', 'Pilar 4', 'Pilar 5', 'Pilar 6'];
-  const akhlakList = Array.from(new Set(displayList.map(item => item.nilai_berakhlak).filter(Boolean))).sort();
+  const akhlakList = ['Berorientasi Pelayanan','Akuntabel','Kompeten','Harmonis','Loyal','Adaptif','Kolaboratif'];
 
   const filteredInovasi = displayList.filter(item => 
     item.nama_inovasi?.toLowerCase().includes(searchQuery.toLowerCase())
