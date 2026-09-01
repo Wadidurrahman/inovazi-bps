@@ -74,14 +74,17 @@ function MainContent() {
         />
       </div>
 
-      <div className="w-full bg-gradient-to-r from-[#b3471e] via-[#c75122] to-[#913310] border-b border-[#7a2a0c] overflow-hidden py-1.5 shadow-inner relative z-30">
-        <div className="w-full overflow-hidden whitespace-nowrap relative">
-          <div className="animate-marquee inline-block text-white text-xs sm:text-sm font-semibold tracking-wide">
-            <span className="drop-shadow-sm">Selamat Datang di Portal Inovasi Pembangunan Zona Integritas (ZI) Badan Pusat Statistik (BPS) Kota Probolinggo — Komitmen Bersama Seluruh Pegawai untuk Mewujudkan BPS sebagai Wilayah Bebas dari Korupsi (WBK) dan Wilayah Birokrasi Bersih dan Melayani (WBBM)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <span className="drop-shadow-sm">Selamat Datang di Portal Inovasi Pembangunan Zona Integritas (ZI) Badan Pusat Statistik (BPS) Kota Probolinggo — Komitmen Bersama Seluruh Pegawai untuk Mewujudkan BPS sebagai Wilayah Bebas dari Korupsi (WBK) dan Wilayah Birokrasi Bersih dan Melayani (WBBM)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      {/* Teks Berjalan HANYA muncul jika tidak ada parameter detail dan preview (berarti di halaman Home) */}
+      {!detailId && !previewId && (
+        <div className="w-full bg-gradient-to-r from-[#b3471e] via-[#c75122] to-[#913310] border-b border-[#7a2a0c] overflow-hidden py-1.5 shadow-inner relative z-30 animate-fadeIn">
+          <div className="w-full overflow-hidden whitespace-nowrap relative">
+            <div className="animate-marquee inline-block text-white text-xs sm:text-sm font-semibold tracking-wide">
+              <span className="drop-shadow-sm">Selamat Datang di Portal Inovasi Pembangunan Zona Integritas (ZI) Badan Pusat Statistik (BPS) Kota Probolinggo — Komitmen Bersama Seluruh Pegawai untuk Mewujudkan BPS sebagai Wilayah Bebas dari Korupsi (WBK) dan Wilayah Birokrasi Bersih dan Melayani (WBBM)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              <span className="drop-shadow-sm">Selamat Datang di Portal Inovasi Pembangunan Zona Integritas (ZI) Badan Pusat Statistik (BPS) Kota Probolinggo — Komitmen Bersama Seluruh Pegawai untuk Mewujudkan BPS sebagai Wilayah Bebas dari Korupsi (WBK) dan Wilayah Birokrasi Bersih dan Melayani (WBBM)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <main className="flex-1 relative overflow-hidden bg-slate-50">
         {detailId && activeDetail ? (
